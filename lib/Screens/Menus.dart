@@ -1,9 +1,11 @@
 // ignore: avoid_web_libraries_in_flutter
+import 'dart:convert';
 import 'dart:js_util';
 
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
 import 'package:web3front/Services/encode_contract.dart';
+import 'package:web3front/Services/get_contract_abi.dart';
 import 'package:web3front/Services/get_contract_bytecode.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
@@ -17,6 +19,7 @@ class Menus extends StatefulWidget {
 }
 
 class _MenusState extends State<Menus> {
+  Contract? currentContract;
   String getBalance = "0";
   String rinkebyBalance = "0";
   String deployedContract = "";
@@ -24,6 +27,8 @@ class _MenusState extends State<Menus> {
   String encodedABI = "";
   String contractBytecode = "";
   String txReceipt = "";
+  String connectContract = "";
+  String mintedToken = "";
 
   var rinkeby = JsonRpcProvider(
       'https://rinkeby.infura.io/v3/ee940eb70e2a42cda454bcd454a28e3f');
@@ -158,13 +163,76 @@ class _MenusState extends State<Menus> {
               result: this.contractBytecode,
             ),
 
+            /// Connect to already deployed contract
+            methodCaller(
+              onPress: () async {
+                /// Get Human Readable ABI
+                final abi = await GetContractAbi().getContractAbi();
+
+                /// Create a new Contract instance
+                final contract = Contract(
+                    '0x83b2a0889c238a0172103a1f8b3511e67c00bfa5',
+                    abi ?? [],
+                    web3);
+
+                /// Assign metamask signer to the contract (so we can perform a transaction)
+                late final currentContract = contract.connect(web3.getSigner());
+
+                /// Get Contract Name
+                var contractName = "";
+                contractName = await promiseToFuture(currentContract.name());
+
+                setState(() {
+                  this.currentContract = currentContract;
+                  this.connectContract = contractName;
+                });
+              },
+              buttonName: "Connect Contract",
+              result: this.connectContract,
+            ),
+
+            /// Mint Token
+            methodCaller(
+              onPress: () async {
+                if (this.currentContract == null) {
+                  Flushbar(
+                    duration: Duration(seconds: 2),
+                    message: "Please Connect to a Contract First",
+                  )..show(context);
+                } else {
+                  /// Total Token
+                  final totalToken = await promiseToFuture(
+                      callMethod(this.currentContract!, 'totalToken', []));
+
+                  /// New Token
+                  final rawTotalToken = jsonDecode(stringify(totalToken));
+                  final parsedTotalToken = int.parse(rawTotalToken['hex']);
+                  final newToken = parsedTotalToken + 1;
+
+                  /// Mint Token
+                  final mintToken = await promiseToFuture(callMethod(
+                      this.currentContract!, 'mint', [
+                    ethereum.selectedAddress,
+                    newToken,
+                    'https://www.twitter.com'
+                  ]));
+
+                  setState(() {
+                    this.mintedToken = stringify(mintToken);
+                  });
+                }
+              },
+              buttonName: "Mint Token",
+              result: this.mintedToken,
+            ),
+
             /// Get Transaction Receipt
             methodCaller(
               onPress: () async {
                 final receipt = await promiseToFuture(rinkeby.getTransactionReceipt(
                     '0xf6f016f92f915577c76868675856f30e481513847cd674f4c4bfb8dd6d187152'));
                 setState(() {
-                  this.txReceipt = stringify(receipt);
+                  this.txReceipt = receipt.toString();
                 });
               },
               buttonName: "Get Transaction Receipt",

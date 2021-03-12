@@ -1,8 +1,10 @@
-// ignore: avoid_web_libraries_in_flutter
 import 'dart:convert';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:js_util';
+import 'dart:typed_data';
 
 import 'package:another_flushbar/flushbar.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:web3front/Services/encode_contract.dart';
 import 'package:web3front/Services/get_contract_abi.dart';
@@ -29,6 +31,7 @@ class _MenusState extends State<Menus> {
   String txReceipt = "";
   String connectContract = "";
   String mintedToken = "";
+  Uint8List uploadedImage = Uint8List.fromList([]);
 
   var rinkeby = JsonRpcProvider(
       'https://rinkeby.infura.io/v3/ee940eb70e2a42cda454bcd454a28e3f');
@@ -55,7 +58,7 @@ class _MenusState extends State<Menus> {
               onPress: () async {
                 if (ethereum.isConnected()) {
                   final balance = await promiseToFuture(
-                      web3.getBalance(ethereum.selectedAddress));
+                      web3.getBalance(ethereum.selectedAddress!));
                   setState(() {
                     this.getBalance = balance.toString();
                   });
@@ -73,7 +76,7 @@ class _MenusState extends State<Menus> {
               onPress: () async {
                 if (ethereum.isConnected()) {
                   final balance = await promiseToFuture(
-                      rinkeby.getBalance(ethereum.selectedAddress));
+                      rinkeby.getBalance(ethereum.selectedAddress!));
                   setState(() {
                     this.rinkebyBalance = balance.toString();
                   });
@@ -232,12 +235,33 @@ class _MenusState extends State<Menus> {
                 final receipt = await promiseToFuture(rinkeby.getTransactionReceipt(
                     '0xf6f016f92f915577c76868675856f30e481513847cd674f4c4bfb8dd6d187152'));
                 setState(() {
-                  this.txReceipt = receipt.toString();
+                  this.txReceipt = stringify(receipt);
                 });
               },
               buttonName: "Get Transaction Receipt",
               result: this.txReceipt,
             ),
+
+            /// Upload Image
+            methodCaller(
+                onPress: () async {
+                  FilePickerResult? result =
+                      await FilePicker.platform.pickFiles(
+                    type: FileType.image,
+                    allowMultiple: false,
+                  );
+
+                  if (result != null) {
+                    setState(() {
+                      this.uploadedImage = result.files.single.bytes!;
+                    });
+                  } else {
+                    print("Error");
+                  }
+                },
+                buttonName: "Upload Image",
+                result: this.uploadedImage,
+                isImage: true),
           ],
         ),
       ),
@@ -247,7 +271,8 @@ class _MenusState extends State<Menus> {
   Widget methodCaller(
       {required VoidCallback onPress,
       required String buttonName,
-      required String result}) {
+      required dynamic result,
+      bool? isImage}) {
     return Center(
       child: SingleChildScrollView(
         child: Column(
@@ -256,13 +281,18 @@ class _MenusState extends State<Menus> {
           children: [
             ElevatedButton(
               onPressed: onPress,
-              child: Text(buttonName),
+              child: Text(
+                buttonName,
+                textAlign: TextAlign.center,
+              ),
             ),
             SizedBox(
               height: 12,
             ),
             Container(
-              child: SelectableText("Result : " + result),
+              child: isImage ?? false
+                  ? Image.memory(result)
+                  : SelectableText("Result : " + result.toString()),
             )
           ],
         ),

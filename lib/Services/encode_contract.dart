@@ -10,7 +10,7 @@ class EncodeContract {
   }) async {
     try {
       var response = await dio.get(
-          "${Endpoints.apiBaseUrl}encode?contractName=Test&contractSymbol=TST");
+          "${Endpoints.apiBaseUrl}encode?contractName=$contractName&contractSymbol=$contractSymbol");
       return response.data ?? Future.value("Failed to Get Data");
     } catch (e) {
       print(e);

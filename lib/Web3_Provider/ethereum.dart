@@ -16,7 +16,7 @@ class Ethereum {
   external bool isConnected();
 
   @JS("selectedAddress")
-  external String get selectedAddress;
+  external String? get selectedAddress;
 
   @JS("request")
   external Future request(RequestParams params);

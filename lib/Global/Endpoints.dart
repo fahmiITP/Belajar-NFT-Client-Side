@@ -1,4 +1,4 @@
 /// API Endpoint
 class Endpoints {
-  static const String apiBaseUrl = 'http://localhost:3000/';
+  static const String apiBaseUrl = 'https://belajar-nft-api.herokuapp.com/';
 }

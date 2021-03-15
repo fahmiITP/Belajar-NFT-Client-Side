@@ -180,9 +180,11 @@ packages:
   responsive_framework:
     dependency: "direct main"
     description:
-      name: responsive_framework
-      url: "https://pub.dartlang.org"
-    source: hosted
+      path: "."
+      ref: nullsafety
+      resolved-ref: "927af38168380882f87b7548558e4442b0d6fea3"
+      url: "git://github.com/Codelessly/ResponsiveFramework.git"
+    source: git
     version: "0.0.15"
   sky_engine:
     dependency: transitive

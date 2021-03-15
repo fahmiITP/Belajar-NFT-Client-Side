@@ -1,5 +1,3 @@
-import 'dart:js_util';
-
 import 'package:flutter/material.dart';
 import 'package:web3front/Helpers/ChainIDConverter.dart';
 import 'package:web3front/Helpers/SnackbarHelper.dart';
@@ -70,11 +68,18 @@ class _MyHomePageState extends State<MyHomePage> {
                   builder: (context, state) {
                     if (state is MetamaskCheckInstalled) {
                       return ElevatedButton(
-                        child: Text("Connect to Metamask Wallet"),
+                        child: Text(ethereum.selectedAddress != null
+                            ? "Navigate to Contract Creation"
+                            : "Connect to Metamask Wallet"),
                         onPressed: () {
-                          context
-                              .read<MetamaskConnectBloc>()
-                              .add(MetamaskConnectStart());
+                          if (ethereum.selectedAddress != null) {
+                            Navigator.of(context)
+                                .pushNamed(RouteName.contractForm);
+                          } else {
+                            context
+                                .read<MetamaskConnectBloc>()
+                                .add(MetamaskConnectStart());
+                          }
                         },
                       );
                     } else {

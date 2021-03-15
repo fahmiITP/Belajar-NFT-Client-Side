@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:web3front/Routes/RouteName.dart';
 import 'package:web3front/Screens/ContractCreation/ContractCreation.dart';
 import 'package:web3front/Screens/Home/HomeScreen.dart';
+import 'package:web3front/Screens/ItemCreation/ItemCreation.dart';
 import 'package:web3front/Screens/Menus.dart';
 
 class Routes {
@@ -18,6 +19,9 @@ class Routes {
       case RouteName.contractForm:
         return MaterialPageRoute(
             builder: (_) => ContractCreation(), settings: settings);
+      case RouteName.itemForm:
+        return MaterialPageRoute(
+            builder: (_) => ItemCreation(), settings: settings);
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

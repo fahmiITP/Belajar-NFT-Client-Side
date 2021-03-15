@@ -4,8 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
-import 'package:web3front/Services/encode_contract.dart';
-import 'package:web3front/Services/save_contract_to_db.dart';
+import 'package:web3front/Services/contract_repository.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
 import 'package:web3front/main.dart';
@@ -15,9 +14,7 @@ part 'contract_create_state.dart';
 
 class ContractCreateBloc
     extends Bloc<ContractCreateEvent, ContractCreateState> {
-  final EncodeContract encodeContractRepository = EncodeContract();
-  final SaveContractRepository saveContractRepository =
-      SaveContractRepository();
+  final ContractRepository contractRepository = ContractRepository();
   ContractCreateBloc() : super(ContractCreateInitial());
 
   @override
@@ -32,7 +29,7 @@ class ContractCreateBloc
         step: "Generating Bytecodes",
       );
       try {
-        final byteCode = await encodeContractRepository.getEncodedAbi(
+        final byteCode = await contractRepository.getEncodedAbi(
           contractName: event.contractName,
           contractSymbol: event.contractSymbol,
         );
@@ -68,7 +65,7 @@ class ContractCreateBloc
                   totalProgress: totalProgress,
                   step: "Saving Contract");
 
-              final saveToDB = await saveContractRepository.saveContract(
+              final saveToDB = await contractRepository.saveContract(
                   contractAddress: contractAddress,
                   contractAbi: byteCode,
                   contractOwner: ethereum.selectedAddress!);

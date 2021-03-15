@@ -2,9 +2,8 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:js/js.dart';
+import 'package:js/js_util.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
-import 'dart:js_util';
 
 part 'metamask_check_event.dart';
 part 'metamask_check_state.dart';

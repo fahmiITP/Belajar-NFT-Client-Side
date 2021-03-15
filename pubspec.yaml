@@ -30,7 +30,10 @@ dependencies:
   file_picker: ^3.0.0
   flutter_bloc: ^7.0.0-nullsafety.5
   js: ^0.6.3
-  responsive_framework: ^0.0.15
+  responsive_framework:
+    git:
+      url: git://github.com/Codelessly/ResponsiveFramework.git
+      ref: nullsafety
 
 dev_dependencies:
   flutter_test:

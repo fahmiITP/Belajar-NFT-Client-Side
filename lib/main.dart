@@ -19,6 +19,7 @@ import 'package:web3front/Routes/GeneratedRoutes.dart';
 import 'package:web3front/Routes/RouteName.dart';
 
 import 'Logic/Items/ItemList/bloc/item_list_bloc.dart';
+import 'Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
 
 void main() {
   runApp(MyApp());
@@ -45,6 +46,12 @@ class MyApp extends StatelessWidget {
         ),
         BlocProvider(
           create: (context) => BurnItemBloc(
+            context.read<ContractListBloc>(),
+            context.read<ContractSelectCubit>(),
+          ),
+        ),
+        BlocProvider(
+          create: (context) => TransferItemBloc(
             context.read<ContractListBloc>(),
             context.read<ContractSelectCubit>(),
           ),

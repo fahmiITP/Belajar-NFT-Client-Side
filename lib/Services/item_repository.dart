@@ -87,6 +87,33 @@ class ItemRepository {
     }
   }
 
+  /// Burn token metadata
+  Future<dynamic?> transferToken(
+      {required String contractAddress,
+      required int tokenId,
+      required String newOwner}) async {
+    try {
+      var response = await dio.post(
+        "${Endpoints.apiBaseUrl}tokens/transfer",
+        data: {
+          "contract_address": contractAddress,
+          "token_id": tokenId,
+          "new_owner": newOwner
+        },
+        onSendProgress: (count, total) {
+          print("$count / $total");
+        },
+      );
+
+      print(response.data);
+
+      return response.data ?? Future.value("Error Saving Metadata");
+    } catch (e) {
+      print(e);
+      return e.toString();
+    }
+  }
+
   /// Get Token Metadata
   Future<dynamic?> getTokenMetadata({
     required String contractAddress,

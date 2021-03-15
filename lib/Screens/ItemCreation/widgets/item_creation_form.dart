@@ -187,10 +187,20 @@ class _ItemCreationFormState extends State<ItemCreationForm> {
                                     .read<ItemFormBloc>()
                                     .state as ItemFormInitial)
                                 .itemDescription;
-                            context.read<MintItemBloc>().add(MintItemStart(
-                                imageBytes: imageBytes,
-                                itemName: itemName,
-                                itemDescription: itemDescription));
+                            if (imageBytes != "" &&
+                                itemName != "" &&
+                                itemDescription != "") {
+                              context.read<MintItemBloc>().add(MintItemStart(
+                                  imageBytes: imageBytes,
+                                  itemName: itemName,
+                                  itemDescription: itemDescription));
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    "Please fill in the empty fields, as well as the image."),
+                              ));
+                            }
                           },
                           child: Center(
                             child: Text("Add item to Contract"),

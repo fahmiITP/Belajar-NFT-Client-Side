@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:web3front/Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class CustomDialog extends StatelessWidget {
+class CustomDialog extends StatefulWidget {
   final dynamic item;
   final VoidCallback burnCallback;
   final VoidCallback transferCallback;
@@ -13,8 +15,15 @@ class CustomDialog extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  _CustomDialogState createState() => _CustomDialogState();
+}
+
+class _CustomDialogState extends State<CustomDialog> {
+  TextEditingController textEditingController = TextEditingController();
+
+  @override
   Widget build(BuildContext context) {
-    final itemName = item['name'];
+    final itemName = widget.item['name'];
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -22,7 +31,7 @@ class CustomDialog extends StatelessWidget {
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: Container(
-        height: 200,
+        height: 270,
         width: 200,
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -35,7 +44,7 @@ class CustomDialog extends StatelessWidget {
           children: [
             ResponsiveRowColumnItem(
               child: InkWell(
-                onTap: burnCallback,
+                onTap: widget.burnCallback,
                 child: Container(
                   height: 50,
                   width: double.infinity,
@@ -52,8 +61,33 @@ class CustomDialog extends StatelessWidget {
               ),
             ),
             ResponsiveRowColumnItem(
+              child: Container(
+                height: 50,
+                width: double.infinity,
+                child: Center(
+                  child: TextField(
+                    controller: textEditingController,
+                    decoration: InputDecoration(
+                      labelText: "New Owner Address Name",
+                      alignLabelWithHint: true,
+                      border: OutlineInputBorder(),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ResponsiveRowColumnItem(
               child: InkWell(
-                onTap: transferCallback,
+                onTap: () {
+                  if (textEditingController.text != "") {
+                    Navigator.of(context, rootNavigator: true).pop();
+                    context.read<TransferItemBloc>().add(
+                          TransferItemStart(
+                              tokenId: widget.item['token_id'],
+                              newOwner: textEditingController.text),
+                        );
+                  }
+                },
                 child: Container(
                   height: 50,
                   width: double.infinity,

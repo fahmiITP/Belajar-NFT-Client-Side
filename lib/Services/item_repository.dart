@@ -24,18 +24,19 @@ class ItemRepository {
       return result;
     } catch (e) {
       print(e);
+      return [e.toString()];
     }
   }
 
   /// Save token metadata
-  Future<dynamic?> saveTokenMetadata({
-    required String contractAddress,
-    required String ownerAddress,
-    required String imageBytes,
-    required String itemName,
-    required String itemDescription,
-    required int tokenId,
-  }) async {
+  Future<dynamic?> saveTokenMetadata(
+      {required String contractAddress,
+      required String ownerAddress,
+      required String imageBytes,
+      required String itemName,
+      required String itemDescription,
+      required int tokenId,
+      Function(int, int)? onSendProgressCallback}) async {
     try {
       var response = await dio.post(
         "${Endpoints.apiBaseUrl}tokens/add",
@@ -47,9 +48,10 @@ class ItemRepository {
           "description": itemDescription,
           "image": imageBytes
         },
-        onSendProgress: (count, total) {
-          print("$count / $total");
-        },
+        onSendProgress: onSendProgressCallback ??
+            (count, total) {
+              print("$count / $total");
+            },
       );
 
       print(response.data);
@@ -125,6 +127,7 @@ class ItemRepository {
       return response.data ?? Future.value("Failed to Get Data");
     } catch (e) {
       print(e);
+      return e.toString();
     }
   }
 }

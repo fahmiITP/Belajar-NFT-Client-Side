@@ -17,6 +17,7 @@ class ContractRepository {
       return response.data ?? Future.value("Failed to Get Data");
     } catch (e) {
       print(e);
+      return e.toString();
     }
   }
 
@@ -28,6 +29,7 @@ class ContractRepository {
       return result;
     } catch (e) {
       print(e);
+      return [e.toString()];
     }
   }
 
@@ -46,7 +48,7 @@ class ContractRepository {
       });
       return response.data ?? Future.value("Failed to Save Data");
     } catch (e) {
-      print(e);
+      return e.toString();
     }
   }
 
@@ -61,6 +63,7 @@ class ContractRepository {
       return result;
     } catch (e) {
       print(e);
+      return [e.toString()];
     }
   }
 }

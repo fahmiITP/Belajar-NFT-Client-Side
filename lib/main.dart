@@ -58,7 +58,7 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Learn NFT',
+        title: 'Demo NFT',
         theme: ThemeData(
           primarySwatch: Colors.blue,
         ),

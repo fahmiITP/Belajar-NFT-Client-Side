@@ -1,8 +1,6 @@
-POST http://localhost:3000/tokens/burn HTTP/1.1
+POST https://belajar-nft-api.herokuapp.com/contracts/userContracts HTTP/1.1
 content-type: application/json
 
 {
-
-    "contract_address": "0xB7fAf212A68AE21b87a4623fa7acae72179D0726",
-    "token_id": 1
+    "contract_owner": "0xB7fAf212A68AE21b87a4623fa7acae72179D0726"
 }

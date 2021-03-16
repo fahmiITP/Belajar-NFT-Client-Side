@@ -19,4 +19,5 @@ Make sure you have Flutter 2.0 installed on your machine.
 - The ready to deploy webapp will be on "build/web" folder.
 - Pack or Compress the webapp folder.
 - Upload the packed file to your 'public_html' directory on your hosting.
+- Extract and move all the file inside to the root of your 'public_html'.
 - You're done.

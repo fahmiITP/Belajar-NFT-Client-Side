@@ -1,6 +1,5 @@
 # Web3front
 
-A new Flutter project.
 This project only runs on Flutter Web and with Null Safety Sound.
 Make sure you have Flutter 2.0 installed on your machine.
 

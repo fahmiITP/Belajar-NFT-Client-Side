@@ -70,7 +70,7 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
           await itemRepository.transferToken(
             newOwner: event.newOwner,
             contractAddress: address,
-            tokenId: event.tokenId,
+            tokenId: event.tokenId.toString(),
           );
 
           yield TransferItemSuccess(tokenId: event.tokenId.toString());

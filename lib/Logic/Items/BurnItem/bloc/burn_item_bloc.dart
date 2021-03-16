@@ -69,7 +69,7 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
           /// Save token meta data to DB
           await itemRepository.burnToken(
             contractAddress: address,
-            tokenId: event.tokenId,
+            tokenId: event.tokenId.toString(),
           );
 
           yield BurnItemSuccess(tokenId: event.tokenId.toString());

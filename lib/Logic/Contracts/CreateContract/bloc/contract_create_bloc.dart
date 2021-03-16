@@ -15,6 +15,7 @@ part 'contract_create_state.dart';
 class ContractCreateBloc
     extends Bloc<ContractCreateEvent, ContractCreateState> {
   final ContractRepository contractRepository = ContractRepository();
+  Timer? timer;
   ContractCreateBloc() : super(ContractCreateInitial());
 
   @override
@@ -89,5 +90,11 @@ class ContractCreateBloc
         yield ContractCreateFailed("Error Creating Contract");
       }
     }
+  }
+
+  @override
+  Future<void> close() {
+    timer?.cancel();
+    return super.close();
   }
 }

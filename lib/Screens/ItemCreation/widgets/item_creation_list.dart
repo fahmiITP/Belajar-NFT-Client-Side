@@ -1,16 +1,11 @@
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:js/js_util.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemList/bloc/item_list_bloc.dart';
-import 'package:web3front/Routes/RouteName.dart';
 import 'package:web3front/Screens/Widgets/CustomDialog.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html' as html;
 
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';

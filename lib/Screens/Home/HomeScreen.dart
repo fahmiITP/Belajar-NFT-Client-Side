@@ -72,7 +72,8 @@ class _MyHomePageState extends State<MyHomePage> {
                             ? "Navigate to Contract Creation"
                             : "Connect to Metamask Wallet"),
                         onPressed: () {
-                          if (ethereum.selectedAddress != null) {
+                          if (ethereum.selectedAddress != null &&
+                              ethereum.isConnected()) {
                             Navigator.of(context)
                                 .pushNamed(RouteName.contractForm);
                           } else {

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-import 'dart:typed_data';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -76,19 +75,22 @@ class MintItemBloc extends Bloc<MintItemEvent, MintItemState> {
               totalProgress: totalProgress,
               step: "Uploading Metadata");
 
-          /// Save token meta data to DB
-          await itemRepository.saveTokenMetadata(
-            contractAddress: address,
-            ownerAddress: ethereum.selectedAddress!,
-            imageBytes: event.imageBytes,
-            itemName: event.itemName,
-            itemDescription: event.itemDescription,
-            tokenId: newToken,
-          );
-
-          yield MintItemSuccess(tokenId: newToken.toString());
+          try {
+            /// Save token meta data to DB
+            await itemRepository.saveTokenMetadata(
+              contractAddress: address,
+              ownerAddress: ethereum.selectedAddress!,
+              imageBytes: event.imageBytes,
+              itemName: event.itemName,
+              itemDescription: event.itemDescription,
+              tokenId: newToken.toString(),
+            );
+            yield MintItemSuccess(tokenId: newToken.toString());
+          } catch (e) {
+            yield MintItemFailed(error: "Cannot Save Metadata");
+          }
         } else {
-          yield MintItemFailed(error: "Cannot Save Metadata");
+          yield MintItemFailed(error: "Cannot Mint Token");
         }
       } catch (e) {
         if (e.toString() == "[object Object]") {

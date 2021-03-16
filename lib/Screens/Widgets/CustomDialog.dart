@@ -68,7 +68,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   child: TextField(
                     controller: textEditingController,
                     decoration: InputDecoration(
-                      labelText: "New Owner Address Name",
+                      labelText: "New Owner Address",
                       alignLabelWithHint: true,
                       border: OutlineInputBorder(),
                     ),

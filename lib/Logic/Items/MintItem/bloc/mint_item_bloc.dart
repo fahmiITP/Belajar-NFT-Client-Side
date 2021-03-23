@@ -31,9 +31,11 @@ class MintItemBloc extends Bloc<MintItemEvent, MintItemState> {
     MintItemEvent event,
   ) async* {
     if (event is MintItemStart) {
-      final totalProgress = 3;
+      final totalProgress = 4;
       yield MintItemLoading(
-          progress: 1, totalProgress: totalProgress, step: "Minting Token");
+          progress: 1,
+          totalProgress: totalProgress,
+          step: "Minting Token (Please Confirm the Transaction)");
 
       try {
         /// Current Contract Address
@@ -91,28 +93,47 @@ class MintItemBloc extends Bloc<MintItemEvent, MintItemState> {
         /// If it's return 1, then it's confirmed, if null, then it's failed.
         final isConfirmed = confirmationResult['confirmations'];
 
-        if (result['hash'] != null && isConfirmed == 1) {
+        if (result['hash'] != null && isConfirmed >= 1) {
           yield MintItemLoading(
               progress: 3,
               totalProgress: totalProgress,
-              step: "Uploading Metadata");
+              step: "Uploading Image");
 
           try {
-            /// Save token meta data to DB
-            await itemRepository.saveTokenMetadata(
-              contractAddress: address,
-              ownerAddress: ethereum.selectedAddress!,
-              imageBytes: event.imageBytes,
-              itemName: event.itemName,
-              itemDescription: event.itemDescription,
-              tokenId: newToken.toString(),
+            String contractAndToken = "$address-$newToken";
+
+            /// Upload Image to Firestore
+            final uploadRes = await itemRepository.uploadImageToStorage(
+              encodedImage: event.imageBytes,
+              fileName: contractAndToken,
             );
-            yield MintItemSuccess(tokenId: newToken.toString());
+
+            if (uploadRes != null) {
+              yield MintItemLoading(
+                  progress: 4,
+                  totalProgress: totalProgress,
+                  step: "Uploading Metadata");
+
+              try {
+                /// Save token meta data to DB
+                await itemRepository.saveTokenMetadata(
+                  contractAddress: address,
+                  ownerAddress: ethereum.selectedAddress!,
+                  imageBytes: uploadRes,
+                  itemName: event.itemName,
+                  itemDescription: event.itemDescription,
+                  tokenId: newToken.toString(),
+                );
+                yield MintItemSuccess(tokenId: newToken.toString());
+              } catch (e) {
+                yield MintItemFailed(error: "Upload Metadata ${e.toString()}");
+              }
+            }
           } catch (e) {
             yield MintItemFailed(error: "Cannot Save Metadata");
           }
         } else {
-          yield MintItemFailed(error: "Cannot Mint Token");
+          yield MintItemFailed(error: "Cannot Mint Token $confirmationResult");
         }
       } catch (e) {
         if (e.toString() == "[object Object]") {

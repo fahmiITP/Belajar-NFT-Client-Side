@@ -106,8 +106,22 @@ class _ItemCreationListState extends State<ItemCreationList> {
                                     child: Stack(
                                       children: [
                                         Center(
-                                          child: Image.memory(base64Decode(
-                                              state.tokenList[index]['image'])),
+                                          child: Builder(
+                                            builder: (context) {
+                                              if (!state.tokenList[index]
+                                                      ['image']
+                                                  .toString()
+                                                  .contains("https://")) {
+                                                return Image.memory(
+                                                    base64Decode(
+                                                        state.tokenList[index]
+                                                            ['image']));
+                                              } else {
+                                                return Image.network(state
+                                                    .tokenList[index]['image']);
+                                              }
+                                            },
+                                          ),
                                         ),
                                         Align(
                                           alignment: Alignment.bottomCenter,

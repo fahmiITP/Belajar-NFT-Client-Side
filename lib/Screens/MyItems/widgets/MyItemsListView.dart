@@ -26,9 +26,18 @@ class MyItemsListView extends StatelessWidget {
               child: Stack(
                 children: [
                   Center(
-                    child: Image.memory(
-                      base64Decode(
-                          state.myItems[contractIndex].item[index].image),
+                    child: Builder(
+                      builder: (context) {
+                        if (!state.myItems[contractIndex].item[index].image
+                            .toString()
+                            .contains("https://")) {
+                          return Image.memory(base64Decode(
+                              state.myItems[contractIndex].item[index].image));
+                        } else {
+                          return Image.network(
+                              state.myItems[contractIndex].item[index].image);
+                        }
+                      },
                     ),
                   ),
                   Align(

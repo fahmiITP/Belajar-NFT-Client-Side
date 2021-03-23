@@ -58,7 +58,7 @@ class ContractRepository {
   Future<List<dynamic>?> getContracts({required String userAddress}) async {
     try {
       var response = await http.post(
-          uriParser("${Endpoints.apiBaseUrl}contracts/getAllContract"),
+          uriParser("${Endpoints.apiBaseUrl}contracts/userContracts"),
           body: {
             "owner_address": userAddress,
           });

@@ -43,7 +43,7 @@ class ContractCreateBloc
           yield ContractCreateLoading(
               progress: 2,
               totalProgress: totalProgress,
-              step: "Deploying Contract");
+              step: "Deploying Contract (Please Confirm the Transaction)");
 
           /// Get current chain id
           final chainId = await promiseToFuture(

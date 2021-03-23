@@ -32,7 +32,9 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
     if (event is BurnItemStart) {
       final totalProgress = 3;
       yield BurnItemLoading(
-          progress: 1, totalProgress: totalProgress, step: "Burning Token");
+          progress: 1,
+          totalProgress: totalProgress,
+          step: "Burning Token (Please Confirm the Transaction)");
 
       try {
         /// Current Contract Address

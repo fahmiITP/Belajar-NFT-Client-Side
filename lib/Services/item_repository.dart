@@ -1,8 +1,13 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:web3front/Global/Endpoints.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 class ItemRepository {
+  /// Initialize Firebase Storage Instance
+  FirebaseStorage storage = FirebaseStorage.instance;
+
   /// Get contract token
   Future<List<dynamic>?> getContractTokens({
     required String contractAddress,
@@ -23,6 +28,30 @@ class ItemRepository {
     } catch (e) {
       print(e);
       return [e.toString()];
+    }
+  }
+
+  /// Upload token image
+  Future<String?> uploadImageToStorage({
+    required String encodedImage,
+    required String fileName,
+  }) async {
+    // Create your custom metadata.
+    SettableMetadata metadata = SettableMetadata(
+      customMetadata: <String, String>{
+        "contentType": "image/jpeg",
+      },
+    );
+    try {
+      final res = await storage
+          .ref('nft-image-upload/$fileName.jpeg')
+          .putString(encodedImage,
+              format: PutStringFormat.base64, metadata: metadata);
+
+      return res.ref.getDownloadURL();
+    } catch (e) {
+      print(e);
+      throw e;
     }
   }
 

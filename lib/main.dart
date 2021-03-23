@@ -1,6 +1,7 @@
 @JS()
 library stringify;
 
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:js/js.dart';
 import 'package:flutter/material.dart';
@@ -23,7 +24,13 @@ import 'package:web3front/Routes/RouteName.dart';
 import 'Logic/Items/ItemList/bloc/item_list_bloc.dart';
 import 'Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
 
-void main() {
+Future<void> main() async {
+  /// Call this function to make sure the app is initialized. Otherwise, we can't access native code
+  WidgetsFlutterBinding.ensureInitialized();
+
+  /// Initialize Firebase Core
+  await Firebase.initializeApp();
+
   runApp(MyApp());
 }
 

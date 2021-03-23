@@ -32,7 +32,9 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
     if (event is TransferItemStart) {
       final totalProgress = 3;
       yield TransferItemLoading(
-          progress: 1, totalProgress: totalProgress, step: "Transfering Token");
+          progress: 1,
+          totalProgress: totalProgress,
+          step: "Transfering Token (Please Confirm the Transaction)");
 
       try {
         /// Current Contract Address

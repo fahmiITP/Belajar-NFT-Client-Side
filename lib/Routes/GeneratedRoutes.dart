@@ -4,6 +4,7 @@ import 'package:web3front/Screens/ContractCreation/ContractCreation.dart';
 import 'package:web3front/Screens/Home/HomeScreen.dart';
 import 'package:web3front/Screens/ItemCreation/ItemCreation.dart';
 import 'package:web3front/Screens/Menus.dart';
+import 'package:web3front/Screens/MyItems/MyItems.dart';
 
 class Routes {
   static Route<dynamic> generateRoute(RouteSettings settings) {
@@ -22,6 +23,8 @@ class Routes {
       case RouteName.itemForm:
         return MaterialPageRoute(
             builder: (_) => ItemCreation(), settings: settings);
+      case RouteName.myItems:
+        return MaterialPageRoute(builder: (_) => MyItems(), settings: settings);
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

@@ -12,29 +12,29 @@ import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
 import 'package:web3front/main.dart';
 
-part 'transfer_item_event.dart';
-part 'transfer_item_state.dart';
+part 'sale_item_event.dart';
+part 'sale_item_state.dart';
 
-class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
+class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
   final ItemRepository itemRepository = ItemRepository();
   var web3 = Web3Provider(ethereum);
   final ContractListBloc contractListBloc;
   final ContractSelectCubit contractSelectCubit;
-  TransferItemBloc(
-    this.contractListBloc,
-    this.contractSelectCubit,
-  ) : super(TransferItemInitial());
+  SaleItemBloc({
+    required this.contractListBloc,
+    required this.contractSelectCubit,
+  }) : super(SaleItemInitial());
 
   @override
-  Stream<TransferItemState> mapEventToState(
-    TransferItemEvent event,
+  Stream<SaleItemState> mapEventToState(
+    SaleItemEvent event,
   ) async* {
-    if (event is TransferItemStart) {
-      final totalProgress = 3;
-      yield TransferItemLoading(
+    if (event is SaleItemStart) {
+      final totalProgress = 2;
+      yield SaleItemLoading(
           progress: 1,
           totalProgress: totalProgress,
-          step: "Transfering Token (Please Confirm the Transaction)");
+          step: "Putting Token on Sale");
 
       try {
         /// Current Contract Address
@@ -51,25 +51,25 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
         /// Assign metamask signer to the contract (so we can perform a transaction)
         late final currentContract = contract.connect(web3.getSigner());
 
-        /// Transfer Token
-        final transferToken = await promiseToFuture(
+        /// Sale Token
+        final saleToken = await promiseToFuture(
           callMethod(
             currentContract,
-            'safeTransferFrom',
-            [ethereum.selectedAddress, event.newOwner, event.tokenId],
+            'setApprovalForAll',
+            [address, event.tokenId],
           ),
         );
 
-        final result = jsonDecode(stringify(transferToken));
+        final result = jsonDecode(stringify(saleToken));
 
-        /// Transfer Token Transaction Hash
+        /// Mint Token Transaction Hash
         final trxHash = result['hash'];
 
         /// Waiting the transaction to be mined
-        yield TransferItemLoading(
+        yield SaleItemLoading(
             progress: 2,
             totalProgress: totalProgress,
-            step: "Waiting the token to be mined");
+            step: "Waiting the transaction to be mined");
 
         /// Wait until the transaction has been mined
         final confirmation = await promiseToFuture(
@@ -83,28 +83,21 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
         /// If it's return 1, then it's confirmed, if null, then it's failed.
         final isConfirmed = confirmationResult['confirmations'];
 
-        if (result['hash'] != null && isConfirmed == 1) {
-          yield TransferItemLoading(
-              progress: 3,
+        if (result['hash'] != null) {
+          yield SaleItemLoading(
+              progress: 2,
               totalProgress: totalProgress,
               step: "Updating Metadata");
 
-          /// Save token meta data to DB
-          await itemRepository.transferToken(
-            newOwner: event.newOwner,
-            contractAddress: address,
-            tokenId: event.tokenId.toString(),
-          );
-
-          yield TransferItemSuccess(tokenId: event.tokenId.toString());
+          yield SaleItemSuccess(tokenId: event.tokenId.toString());
         } else {
-          yield TransferItemFailed(error: "Error Transfering Token");
+          yield SaleItemFailed(error: "Error Selling Token");
         }
       } catch (e) {
         if (e.toString() == "[object Object]") {
-          yield TransferItemFailed(error: jsonDecode(stringify(e))['message']);
+          yield SaleItemFailed(error: jsonDecode(stringify(e))['message']);
         } else {
-          yield TransferItemFailed(error: e.toString());
+          yield SaleItemFailed(error: e.toString());
         }
       }
     }

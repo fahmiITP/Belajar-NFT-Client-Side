@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
 import 'package:web3front/Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -60,6 +61,31 @@ class _CustomDialogState extends State<CustomDialog> {
                 ),
               ),
             ),
+
+            /// Put on Sale the Item
+            // ResponsiveRowColumnItem(
+            //   child: InkWell(
+            //     onTap: () async {
+            //       Navigator.of(context, rootNavigator: true).pop();
+            //       context
+            //           .read<SaleItemBloc>()
+            //           .add(SaleItemStart(tokenId: widget.item['token_id']));
+            //     },
+            //     child: Container(
+            //       height: 50,
+            //       width: double.infinity,
+            //       decoration: BoxDecoration(
+            //           borderRadius: BorderRadius.circular(10),
+            //           color: Colors.orange),
+            //       child: Center(
+            //         child: Text(
+            //           "Put On Sale '$itemName'",
+            //           style: TextStyle(color: Colors.white),
+            //         ),
+            //       ),
+            //     ),
+            //   ),
+            // ),
             ResponsiveRowColumnItem(
               child: Container(
                 height: 50,

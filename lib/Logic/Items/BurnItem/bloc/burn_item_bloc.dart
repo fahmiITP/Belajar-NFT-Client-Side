@@ -30,9 +30,11 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
     BurnItemEvent event,
   ) async* {
     if (event is BurnItemStart) {
-      final totalProgress = 2;
+      final totalProgress = 3;
       yield BurnItemLoading(
-          progress: 1, totalProgress: totalProgress, step: "Burning Token");
+          progress: 1,
+          totalProgress: totalProgress,
+          step: "Burning Token (Please Confirm the Transaction)");
 
       try {
         /// Current Contract Address
@@ -60,9 +62,30 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
 
         final result = jsonDecode(stringify(burnToken));
 
-        if (result['hash'] != null) {
+        /// Mint Token Transaction Hash
+        final trxHash = result['hash'];
+
+        /// Waiting the transaction to be mined
+        yield BurnItemLoading(
+            progress: 2,
+            totalProgress: totalProgress,
+            step: "Waiting the transaction to be mined");
+
+        /// Wait until the transaction has been mined
+        final confirmation = await promiseToFuture(
+          web3.waitForTransaction(trxHash),
+        );
+
+        /// Decode confirmation result
+        final confirmationResult = jsonDecode(stringify(confirmation));
+
+        /// Get the the confirmation result data
+        /// If it's return 1, then it's confirmed, if null, then it's failed.
+        final isConfirmed = confirmationResult['confirmations'];
+
+        if (result['hash'] != null && isConfirmed == 1) {
           yield BurnItemLoading(
-              progress: 2,
+              progress: 3,
               totalProgress: totalProgress,
               step: "Updating Metadata");
 

@@ -31,7 +31,7 @@ class MintItemBloc extends Bloc<MintItemEvent, MintItemState> {
     MintItemEvent event,
   ) async* {
     if (event is MintItemStart) {
-      final totalProgress = 2;
+      final totalProgress = 3;
       yield MintItemLoading(
           progress: 1, totalProgress: totalProgress, step: "Minting Token");
 
@@ -67,11 +67,33 @@ class MintItemBloc extends Bloc<MintItemEvent, MintItemState> {
           "${Endpoints.apiBaseUrl}tokens/metadata/$address/$newToken"
         ]));
 
+        /// Mint Token Result
         final result = jsonDecode(stringify(mintToken));
 
-        if (result['hash'] != null) {
+        /// Mint Token Transaction Hash
+        final trxHash = result['hash'];
+
+        /// Waiting the transaction to be mined
+        yield MintItemLoading(
+            progress: 2,
+            totalProgress: totalProgress,
+            step: "Waiting the transaction to be mined");
+
+        /// Wait until the transaction has been mined
+        final confirmation = await promiseToFuture(
+          web3.waitForTransaction(trxHash),
+        );
+
+        /// Decode confirmation result
+        final confirmationResult = jsonDecode(stringify(confirmation));
+
+        /// Get the the confirmation result data
+        /// If it's return 1, then it's confirmed, if null, then it's failed.
+        final isConfirmed = confirmationResult['confirmations'];
+
+        if (result['hash'] != null && isConfirmed == 1) {
           yield MintItemLoading(
-              progress: 2,
+              progress: 3,
               totalProgress: totalProgress,
               step: "Uploading Metadata");
 

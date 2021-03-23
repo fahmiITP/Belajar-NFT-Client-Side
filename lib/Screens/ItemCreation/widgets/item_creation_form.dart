@@ -173,33 +173,38 @@ class _ItemCreationFormState extends State<ItemCreationForm> {
                       Container(
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
-                            final imageBytes = (context
-                                    .read<ItemFormBloc>()
-                                    .state as ItemFormInitial)
-                                .imageBytes;
-                            final itemName = (context.read<ItemFormBloc>().state
-                                    as ItemFormInitial)
-                                .itemName;
-                            final itemDescription = (context
-                                    .read<ItemFormBloc>()
-                                    .state as ItemFormInitial)
-                                .itemDescription;
-                            if (imageBytes != "" &&
-                                itemName != "" &&
-                                itemDescription != "") {
-                              context.read<MintItemBloc>().add(MintItemStart(
-                                  imageBytes: imageBytes,
-                                  itemName: itemName,
-                                  itemDescription: itemDescription));
-                            } else {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(SnackBar(
-                                content: Text(
-                                    "Please fill in the empty fields, as well as the image."),
-                              ));
-                            }
-                          },
+                          onPressed: context.watch<MintItemBloc>().state
+                                  is MintItemLoading
+                              ? null
+                              : () {
+                                  final imageBytes = (context
+                                          .read<ItemFormBloc>()
+                                          .state as ItemFormInitial)
+                                      .imageBytes;
+                                  final itemName = (context
+                                          .read<ItemFormBloc>()
+                                          .state as ItemFormInitial)
+                                      .itemName;
+                                  final itemDescription = (context
+                                          .read<ItemFormBloc>()
+                                          .state as ItemFormInitial)
+                                      .itemDescription;
+                                  if (imageBytes != "" &&
+                                      itemName != "" &&
+                                      itemDescription != "") {
+                                    context.read<MintItemBloc>().add(
+                                        MintItemStart(
+                                            imageBytes: imageBytes,
+                                            itemName: itemName,
+                                            itemDescription: itemDescription));
+                                  } else {
+                                    ScaffoldMessenger.of(context)
+                                        .showSnackBar(SnackBar(
+                                      content: Text(
+                                          "Please fill in the empty fields, as well as the image."),
+                                    ));
+                                  }
+                                },
                           child: Center(
                             child: Text("Add item to Contract"),
                           ),

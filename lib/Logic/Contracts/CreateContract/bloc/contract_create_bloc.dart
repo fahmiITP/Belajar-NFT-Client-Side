@@ -23,7 +23,9 @@ class ContractCreateBloc
     ContractCreateEvent event,
   ) async* {
     if (event is ContractCreateStart) {
-      final totalProgress = 3;
+      final totalProgress = 4;
+
+      /// Generate Bytecodes from Contract Name and Symbol
       yield ContractCreateLoading(
         progress: 1,
         totalProgress: totalProgress,
@@ -37,6 +39,7 @@ class ContractCreateBloc
 
         if (byteCode != null) {
           /// Update loading indicator
+          /// Deploying Contract to Blockchain
           yield ContractCreateLoading(
               progress: 2,
               totalProgress: totalProgress,
@@ -57,12 +60,38 @@ class ContractCreateBloc
                   ),
             );
 
-            final contractAddress = jsonDecode(stringify(deploy))['creates'];
+            /// Contract Deployment
+            final deployResult = jsonDecode(stringify(deploy));
 
-            if (contractAddress != null) {
+            /// Contract Address
+            final contractAddress = deployResult['creates'];
+
+            /// Transaction Hash
+            final trxHash = deployResult['hash'];
+
+            /// Waiting the transactio to be mined
+            yield ContractCreateLoading(
+                progress: 3,
+                totalProgress: totalProgress,
+                step: "Waiting the contract to be mined");
+
+            /// Wait until the transaction has been mined
+            final confirmation = await promiseToFuture(
+              web3.waitForTransaction(trxHash),
+            );
+
+            /// Decode confirmation result
+            final confirmationResult = jsonDecode(stringify(confirmation));
+
+            /// Get the the confirmation result data
+            /// If it's return 1, then it's confirmed, if null, then it's failed.
+            final isConfirmed = confirmationResult['confirmations'];
+
+            if (contractAddress != null && isConfirmed == 1) {
               /// Update loading indicator
+              /// Save the contract to DB if it's already confirmed
               yield ContractCreateLoading(
-                  progress: 3,
+                  progress: 4,
                   totalProgress: totalProgress,
                   step: "Saving Contract");
 
@@ -87,6 +116,7 @@ class ContractCreateBloc
           }
         }
       } catch (e) {
+        print(e);
         yield ContractCreateFailed("Error Creating Contract");
       }
     }

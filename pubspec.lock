@@ -7,7 +7,7 @@ packages:
       name: another_flushbar
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.10.13"
+    version: "1.10.17"
   async:
     dependency: transitive
     description:
@@ -21,7 +21,7 @@ packages:
       name: bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.0-nullsafety.3"
+    version: "7.0.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -78,6 +78,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
+  expandable:
+    dependency: "direct main"
+    description:
+      name: expandable
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "5.0.1"
   fake_async:
     dependency: transitive
     description:
@@ -103,11 +110,18 @@ packages:
       name: flutter_bloc
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "7.0.0-nullsafety.5"
+    version: "7.0.0"
   flutter_plugin_android_lifecycle:
     dependency: transitive
     description:
       name: flutter_plugin_android_lifecycle
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "2.0.0"
+  flutter_slider_drawer:
+    dependency: "direct main"
+    description:
+      name: flutter_slider_drawer
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.0"
@@ -194,12 +208,10 @@ packages:
   responsive_framework:
     dependency: "direct main"
     description:
-      path: "."
-      ref: nullsafety
-      resolved-ref: "927af38168380882f87b7548558e4442b0d6fea3"
-      url: "git://github.com/Codelessly/ResponsiveFramework.git"
-    source: git
-    version: "0.0.15"
+      name: responsive_framework
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.1.0"
   rxdart:
     dependency: "direct main"
     description:
@@ -270,4 +282,4 @@ packages:
     version: "2.1.0"
 sdks:
   dart: ">=2.12.0 <3.0.0"
-  flutter: ">=1.20.0"
+  flutter: ">=2.0.0"

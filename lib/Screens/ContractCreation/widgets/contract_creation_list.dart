@@ -4,6 +4,7 @@ import 'package:js/js_util.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:web3front/Logic/Contracts/ContractList/bloc/contract_list_bloc.dart';
 import 'package:web3front/Logic/Contracts/ContractSelect/cubit/contract_select_cubit.dart';
+import 'package:web3front/Logic/Contracts/CreateContract/bloc/contract_create_bloc.dart';
 import 'package:web3front/Routes/RouteName.dart';
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html;
@@ -11,15 +12,12 @@ import 'dart:html' as html;
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
 
-class ContractCreationList extends StatefulWidget {
-  const ContractCreationList({Key? key}) : super(key: key);
+class ContractCreationList extends StatelessWidget {
+  ContractCreationList({Key? key}) : super(key: key);
 
-  @override
-  _ContractCreationListState createState() => _ContractCreationListState();
-}
+  /// Web3 Provider
+  final web3 = Web3Provider(ethereum);
 
-class _ContractCreationListState extends State<ContractCreationList> {
-  var web3 = Web3Provider(ethereum);
   @override
   Widget build(BuildContext context) {
     return Center(
@@ -85,14 +83,18 @@ class _ContractCreationListState extends State<ContractCreationList> {
                             return Card(
                               elevation: 8,
                               child: InkWell(
-                                onTap: () {
-                                  context
-                                      .read<ContractSelectCubit>()
-                                      .selectContract(contractAddress: address);
-                                  Navigator.of(context).pushNamed(
-                                    RouteName.itemForm,
-                                  );
-                                },
+                                onTap: context.watch<ContractCreateBloc>().state
+                                        is ContractCreateLoading
+                                    ? null
+                                    : () {
+                                        context
+                                            .read<ContractSelectCubit>()
+                                            .selectContract(
+                                                contractAddress: address);
+                                        Navigator.of(context).pushNamed(
+                                          RouteName.itemForm,
+                                        );
+                                      },
                                 child: Padding(
                                   padding: EdgeInsets.all(8.0),
                                   child: Stack(

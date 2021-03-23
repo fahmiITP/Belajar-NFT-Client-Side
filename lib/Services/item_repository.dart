@@ -76,11 +76,12 @@ class ItemRepository {
     }
   }
 
-  /// Burn token metadata
+  /// Transfer token metadata
   Future<dynamic?> transferToken(
       {required String contractAddress,
       required String tokenId,
       required String newOwner}) async {
+    print(newOwner);
     try {
       var response = await http.post(
         Uri.parse("${Endpoints.apiBaseUrl}tokens/transfer"),
@@ -110,6 +111,25 @@ class ItemRepository {
     } catch (e) {
       print(e);
       return e.toString();
+    }
+  }
+
+  /// Get All User Tokens
+  Future<List<dynamic>?> getAllUserTokens({
+    required String ownerAddress,
+  }) async {
+    try {
+      var response = await http.post(
+        Uri.parse("${Endpoints.apiBaseUrl}tokens/getAllUserTokens"),
+        body: {"owner_address": ownerAddress},
+      );
+
+      List<dynamic> result =
+          List<dynamic>.from(jsonDecode(response.body)['rows']);
+      return result;
+    } catch (e) {
+      print(e);
+      return [e.toString()];
     }
   }
 }

@@ -13,6 +13,8 @@ import 'package:web3front/Logic/Contracts/CreateContract/bloc/contract_create_bl
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemForm/bloc/item_form_bloc.dart';
 import 'package:web3front/Logic/Items/MintItem/bloc/mint_item_bloc.dart';
+import 'package:web3front/Logic/Items/MyItems/bloc/my_items_bloc.dart';
+import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
 import 'package:web3front/Logic/Metamask/Check_Metamask/bloc/metamask_check_bloc.dart';
 import 'package:web3front/Logic/Metamask/Connect_Metamask/bloc/metamask_connect_bloc.dart';
 import 'package:web3front/Routes/GeneratedRoutes.dart';
@@ -38,6 +40,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ContractSelectCubit()),
         BlocProvider(create: (context) => ItemFormBloc()),
         BlocProvider(create: (context) => ItemListBloc()),
+        BlocProvider(create: (context) => MyItemsBloc()),
         BlocProvider(
           create: (context) => MintItemBloc(
             contractListBloc: context.read<ContractListBloc>(),
@@ -56,6 +59,12 @@ class MyApp extends StatelessWidget {
             context.read<ContractSelectCubit>(),
           ),
         ),
+        BlocProvider(
+          create: (context) => SaleItemBloc(
+            contractListBloc: context.read<ContractListBloc>(),
+            contractSelectCubit: context.read<ContractSelectCubit>(),
+          ),
+        ),
       ],
       child: MaterialApp(
         title: 'Demo NFT',
@@ -65,14 +74,13 @@ class MyApp extends StatelessWidget {
         onGenerateRoute: Routes.generateRoute,
         builder: (context, widget) => ResponsiveWrapper.builder(
           BouncingScrollWrapper.builder(context, widget!),
-          maxWidth: 2460,
           minWidth: 400,
           defaultScale: true,
           breakpoints: [
             ResponsiveBreakpoint.autoScale(450, name: MOBILE),
             ResponsiveBreakpoint.autoScale(800, name: TABLET),
             ResponsiveBreakpoint.autoScale(1000, name: TABLET),
-            ResponsiveBreakpoint.autoScale(1200, name: DESKTOP),
+            ResponsiveBreakpoint.autoScale(1366, name: DESKTOP),
             ResponsiveBreakpoint.autoScale(2460, name: "4K"),
           ],
         ),

@@ -5,7 +5,8 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemList/bloc/item_list_bloc.dart';
-import 'package:web3front/Screens/Widgets/CustomDialog.dart';
+import 'package:web3front/Logic/Items/MintItem/bloc/mint_item_bloc.dart';
+import 'package:web3front/Screens/ItemCreation/widgets/item_creation_dialog.dart';
 
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
@@ -71,27 +72,35 @@ class _ItemCreationListState extends State<ItemCreationList> {
                               return Card(
                                 elevation: 8,
                                 child: InkWell(
-                                  onTap: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return CustomDialog(
-                                          item: state.tokenList[index],
-                                          burnCallback: () {
-                                            Navigator.of(context,
-                                                    rootNavigator: true)
-                                                .pop();
-                                            context.read<BurnItemBloc>().add(
-                                                BurnItemStart(
-                                                    tokenId:
-                                                        state.tokenList[index]
-                                                            ['token_id']));
-                                          },
-                                          transferCallback: () {},
-                                        );
-                                      },
-                                    );
-                                  },
+                                  /// If item is being minted, disable token selection
+                                  onTap: context.watch<MintItemBloc>().state
+                                          is MintItemLoading
+                                      ? null
+                                      : () {
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CustomDialog(
+                                                item: state.tokenList[index],
+                                                burnCallback: () {
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop();
+                                                  context
+                                                      .read<BurnItemBloc>()
+                                                      .add(
+                                                        BurnItemStart(
+                                                            tokenId:
+                                                                state.tokenList[
+                                                                        index][
+                                                                    'token_id']),
+                                                      );
+                                                },
+                                                transferCallback: () {},
+                                              );
+                                            },
+                                          );
+                                        },
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
                                     child: Stack(

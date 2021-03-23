@@ -98,18 +98,22 @@ class ContractCreationForm extends StatelessWidget {
                       Container(
                         height: 50,
                         child: ElevatedButton(
-                          onPressed: () {
-                            context.read<ContractCreateBloc>().add(
-                                ContractCreateStart(
-                                    contractName: (context
-                                            .read<ContractFormBloc>()
-                                            .state as ContractFormInitial)
-                                        .contractName,
-                                    contractSymbol: (context
-                                            .read<ContractFormBloc>()
-                                            .state as ContractFormInitial)
-                                        .contractSymbol));
-                          },
+                          /// Disable the button when contract creation is in progress
+                          onPressed: context.watch<ContractCreateBloc>().state
+                                  is ContractCreateLoading
+                              ? null
+                              : () {
+                                  context.read<ContractCreateBloc>().add(
+                                      ContractCreateStart(
+                                          contractName: (context
+                                                  .read<ContractFormBloc>()
+                                                  .state as ContractFormInitial)
+                                              .contractName,
+                                          contractSymbol: (context
+                                                  .read<ContractFormBloc>()
+                                                  .state as ContractFormInitial)
+                                              .contractSymbol));
+                                },
                           child: Center(
                             child: Text("Create Contract"),
                           ),

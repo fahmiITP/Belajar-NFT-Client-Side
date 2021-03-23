@@ -15,6 +15,9 @@ class Web3Provider {
   @JS("getBalance")
   external Future getBalance(String address);
 
+  @JS("waitForTransaction")
+  external Future waitForTransaction(String hash);
+
   @JS("getNetwork")
   external Future<Network> getNetwork();
 }

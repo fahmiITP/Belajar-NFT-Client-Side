@@ -30,7 +30,7 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
     TransferItemEvent event,
   ) async* {
     if (event is TransferItemStart) {
-      final totalProgress = 2;
+      final totalProgress = 3;
       yield TransferItemLoading(
           progress: 1, totalProgress: totalProgress, step: "Transfering Token");
 
@@ -60,9 +60,30 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
 
         final result = jsonDecode(stringify(transferToken));
 
-        if (result['hash'] != null) {
+        /// Transfer Token Transaction Hash
+        final trxHash = result['hash'];
+
+        /// Waiting the transaction to be mined
+        yield TransferItemLoading(
+            progress: 2,
+            totalProgress: totalProgress,
+            step: "Waiting the token to be mined");
+
+        /// Wait until the transaction has been mined
+        final confirmation = await promiseToFuture(
+          web3.waitForTransaction(trxHash),
+        );
+
+        /// Decode confirmation result
+        final confirmationResult = jsonDecode(stringify(confirmation));
+
+        /// Get the the confirmation result data
+        /// If it's return 1, then it's confirmed, if null, then it's failed.
+        final isConfirmed = confirmationResult['confirmations'];
+
+        if (result['hash'] != null && isConfirmed == 1) {
           yield TransferItemLoading(
-              progress: 2,
+              progress: 3,
               totalProgress: totalProgress,
               step: "Updating Metadata");
 

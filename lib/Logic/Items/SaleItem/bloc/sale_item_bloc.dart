@@ -12,27 +12,29 @@ import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
 import 'package:web3front/main.dart';
 
-part 'burn_item_event.dart';
-part 'burn_item_state.dart';
+part 'sale_item_event.dart';
+part 'sale_item_state.dart';
 
-class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
+class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
   final ItemRepository itemRepository = ItemRepository();
   var web3 = Web3Provider(ethereum);
   final ContractListBloc contractListBloc;
   final ContractSelectCubit contractSelectCubit;
-  BurnItemBloc(
-    this.contractListBloc,
-    this.contractSelectCubit,
-  ) : super(BurnItemInitial());
+  SaleItemBloc({
+    required this.contractListBloc,
+    required this.contractSelectCubit,
+  }) : super(SaleItemInitial());
 
   @override
-  Stream<BurnItemState> mapEventToState(
-    BurnItemEvent event,
+  Stream<SaleItemState> mapEventToState(
+    SaleItemEvent event,
   ) async* {
-    if (event is BurnItemStart) {
-      final totalProgress = 3;
-      yield BurnItemLoading(
-          progress: 1, totalProgress: totalProgress, step: "Burning Token");
+    if (event is SaleItemStart) {
+      final totalProgress = 2;
+      yield SaleItemLoading(
+          progress: 1,
+          totalProgress: totalProgress,
+          step: "Putting Token on Sale");
 
       try {
         /// Current Contract Address
@@ -49,22 +51,22 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
         /// Assign metamask signer to the contract (so we can perform a transaction)
         late final currentContract = contract.connect(web3.getSigner());
 
-        /// burn Token
-        final burnToken = await promiseToFuture(
+        /// Sale Token
+        final saleToken = await promiseToFuture(
           callMethod(
             currentContract,
-            'burn',
-            [event.tokenId],
+            'setApprovalForAll',
+            [address, event.tokenId],
           ),
         );
 
-        final result = jsonDecode(stringify(burnToken));
+        final result = jsonDecode(stringify(saleToken));
 
         /// Mint Token Transaction Hash
         final trxHash = result['hash'];
 
         /// Waiting the transaction to be mined
-        yield BurnItemLoading(
+        yield SaleItemLoading(
             progress: 2,
             totalProgress: totalProgress,
             step: "Waiting the transaction to be mined");
@@ -81,27 +83,21 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
         /// If it's return 1, then it's confirmed, if null, then it's failed.
         final isConfirmed = confirmationResult['confirmations'];
 
-        if (result['hash'] != null && isConfirmed == 1) {
-          yield BurnItemLoading(
-              progress: 3,
+        if (result['hash'] != null) {
+          yield SaleItemLoading(
+              progress: 2,
               totalProgress: totalProgress,
               step: "Updating Metadata");
 
-          /// Save token meta data to DB
-          await itemRepository.burnToken(
-            contractAddress: address,
-            tokenId: event.tokenId.toString(),
-          );
-
-          yield BurnItemSuccess(tokenId: event.tokenId.toString());
+          yield SaleItemSuccess(tokenId: event.tokenId.toString());
         } else {
-          yield BurnItemFailed(error: "Error Burning Token");
+          yield SaleItemFailed(error: "Error Selling Token");
         }
       } catch (e) {
         if (e.toString() == "[object Object]") {
-          yield BurnItemFailed(error: jsonDecode(stringify(e))['message']);
+          yield SaleItemFailed(error: jsonDecode(stringify(e))['message']);
         } else {
-          yield BurnItemFailed(error: e.toString());
+          yield SaleItemFailed(error: e.toString());
         }
       }
     }

@@ -32,10 +32,10 @@ class ItemRepository {
   }
 
   /// Upload token image
-  Future<String?> uploadImageToStorage({
-    required String encodedImage,
-    required String fileName,
-  }) async {
+  Future<String?> uploadImageToStorage(
+      {required String encodedImage,
+      required String fileName,
+      required String contractAddress}) async {
     // Create your custom metadata.
     SettableMetadata metadata = SettableMetadata(
       customMetadata: <String, String>{
@@ -44,7 +44,7 @@ class ItemRepository {
     );
     try {
       final res = await storage
-          .ref('nft-image-upload/$fileName.jpeg')
+          .ref('nft-image-upload/$contractAddress/$fileName.jpeg')
           .putString(encodedImage,
               format: PutStringFormat.base64, metadata: metadata);
 

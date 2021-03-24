@@ -87,7 +87,7 @@ class ContractCreateBloc
             /// If it's return 1, then it's confirmed, if null, then it's failed.
             final isConfirmed = confirmationResult['confirmations'];
 
-            if (contractAddress != null && isConfirmed == 1) {
+            if (contractAddress != null && isConfirmed >= 1) {
               /// Update loading indicator
               /// Save the contract to DB if it's already confirmed
               yield ContractCreateLoading(

@@ -83,7 +83,7 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
         /// If it's return 1, then it's confirmed, if null, then it's failed.
         final isConfirmed = confirmationResult['confirmations'];
 
-        if (result['hash'] != null && isConfirmed == 1) {
+        if (result['hash'] != null && isConfirmed >= 1) {
           yield BurnItemLoading(
               progress: 3,
               totalProgress: totalProgress,

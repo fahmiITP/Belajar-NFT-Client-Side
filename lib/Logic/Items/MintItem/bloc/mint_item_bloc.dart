@@ -100,13 +100,11 @@ class MintItemBloc extends Bloc<MintItemEvent, MintItemState> {
               step: "Uploading Image");
 
           try {
-            String contractAndToken = "$address-$newToken";
-
             /// Upload Image to Firestore
             final uploadRes = await itemRepository.uploadImageToStorage(
-              encodedImage: event.imageBytes,
-              fileName: contractAndToken,
-            );
+                encodedImage: event.imageBytes,
+                fileName: newToken.toString(),
+                contractAddress: address);
 
             if (uploadRes != null) {
               yield MintItemLoading(

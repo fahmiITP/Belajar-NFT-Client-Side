@@ -1,6 +1,10 @@
-POST https://belajar-nft-api.herokuapp.com/contracts/userContracts HTTP/1.1
+POST https://belajar-nft-api.herokuapp.com/tokens/updateTokenSaleState HTTP/1.1
 content-type: application/json
 
 {
-    "contract_owner": "0xB7fAf212A68AE21b87a4623fa7acae72179D0726"
+    "token_owner": "0xBCC367E4b172459d981F2dFa01fDE7F983eBedAd",
+    "isOnSale": 1,
+    "price": 1000000000000,
+    "token_id": 2,
+    "contract_address": "0x3611ec2e037e8057f45617c89676EE0329A79E96"
 }

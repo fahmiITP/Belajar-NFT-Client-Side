@@ -20,6 +20,9 @@ class Web3Provider {
 
   @JS("getNetwork")
   external Future<Network> getNetwork();
+
+  @JS("getGasPrice")
+  external Future getGasPrice();
 }
 
 @JS("providers.JsonRpcProvider")
@@ -52,6 +55,12 @@ class Signer {
 
   @JS("getChainId")
   external Future getChainId();
+
+  @JS("getGasPrice")
+  external Future getGasPrice();
+
+  @JS("estimateGas")
+  external Future estimateGas(TxParams params);
 }
 
 @JS("utils")
@@ -59,6 +68,13 @@ class Utils {
   external static String verifyMessage(var hash, var sig);
   external static String arrayify(var hash);
   external static String getAddress(var address);
+  external static String keccak256(var message);
+  external static String solidityKeccak256(var types, var values);
+}
+
+@JS("utils.defaultAbiCoder")
+class DefaultABICoder {
+  external static String encode(var types, var values);
 }
 
 @JS("BigNumber")
@@ -73,11 +89,16 @@ class TxParams {
   external String get to;
   external String get value;
   external String get gasLimit;
+  external String get gasPrice;
   external String get data;
 
   // Must have an unnamed factory constructor with named arguments.
   external factory TxParams(
-      {String? to, String? value, String? gasLimit, String? data});
+      {String? to,
+      String? value,
+      String? gasLimit,
+      String? gasPrice,
+      String? data});
 }
 
 // I couldn't figure out how to call any ol' function with this package:js stuff
@@ -104,4 +125,7 @@ class Contract {
 
   @JS("tokenURI")
   external Future tokenURI(BigNumber tokenID);
+
+  @JS("estimateGas")
+  external Future estimateGas();
 }

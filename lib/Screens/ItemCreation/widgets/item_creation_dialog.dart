@@ -32,7 +32,7 @@ class _CustomDialogState extends State<CustomDialog> {
       elevation: 0,
       backgroundColor: Colors.transparent,
       child: Container(
-        height: 270,
+        height: 360,
         width: 200,
         padding: EdgeInsets.all(20),
         decoration: BoxDecoration(
@@ -123,6 +123,31 @@ class _CustomDialogState extends State<CustomDialog> {
                   child: Center(
                     child: Text(
                       "Transfer '$itemName'",
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+            ResponsiveRowColumnItem(
+              child: InkWell(
+                onTap: () {
+                  Navigator.of(context, rootNavigator: true).pop();
+                  context.read<SaleItemBloc>().add(
+                        SaleItemStart(
+                            tokenId: widget.item['token_id'],
+                            price: 1000000000000),
+                      );
+                },
+                child: Container(
+                  height: 50,
+                  width: double.infinity,
+                  decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      color: Colors.green),
+                  child: Center(
+                    child: Text(
+                      "Sell '$itemName'",
                       style: TextStyle(color: Colors.white),
                     ),
                   ),

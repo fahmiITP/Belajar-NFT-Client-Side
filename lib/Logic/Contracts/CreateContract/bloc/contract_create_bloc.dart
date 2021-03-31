@@ -4,6 +4,7 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
+import 'package:web3front/Helpers/EtherHelpers.dart';
 import 'package:web3front/Services/contract_repository.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
@@ -53,10 +54,30 @@ class ContractCreateBloc
           if (ethereum.isConnected() && chainId == "0x4") {
             var web3 = Web3Provider(ethereum);
 
+            /// Get Gas Price
+            final gasPrice = await promiseToFuture(web3.getGasPrice());
+
+            /// Get Gas price on hex value
+            final String parsedGasPrice =
+                jsonDecode(stringify(gasPrice))['hex'];
+
+            /// Get Estimated Gas Use
+            final estimatedGas =
+                await promiseToFuture(web3.getSigner().estimateGas(TxParams(
+                      data: byteCode,
+                    )));
+
+            /// Get estimated gas use on hex value
+            final String parsedEstimatedGas =
+                jsonDecode(stringify(estimatedGas))['hex'];
+
             /// Deploy contract
             final deploy = await promiseToFuture(
               web3.getSigner().sendTransaction(
-                    TxParams(data: byteCode),
+                    TxParams(
+                        data: byteCode,
+                        gasLimit: parsedEstimatedGas,
+                        gasPrice: parsedGasPrice),
                   ),
             );
 
@@ -85,7 +106,7 @@ class ContractCreateBloc
 
             /// Get the the confirmation result data
             /// If it's return 1, then it's confirmed, if null, then it's failed.
-            final isConfirmed = confirmationResult['confirmations'];
+            final isConfirmed = confirmationResult['status'];
 
             if (contractAddress != null && isConfirmed >= 1) {
               /// Update loading indicator

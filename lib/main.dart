@@ -20,6 +20,7 @@ import 'package:web3front/Logic/Metamask/Check_Metamask/bloc/metamask_check_bloc
 import 'package:web3front/Logic/Metamask/Connect_Metamask/bloc/metamask_connect_bloc.dart';
 import 'package:web3front/Routes/GeneratedRoutes.dart';
 import 'package:web3front/Routes/RouteName.dart';
+import 'package:web3front/Services/market_contract_repository.dart';
 
 import 'Logic/Items/ItemList/bloc/item_list_bloc.dart';
 import 'Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
@@ -35,6 +36,8 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  final MarketContractRepository marketContractRepository =
+      MarketContractRepository();
   @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
@@ -70,6 +73,7 @@ class MyApp extends StatelessWidget {
           create: (context) => SaleItemBloc(
             contractListBloc: context.read<ContractListBloc>(),
             contractSelectCubit: context.read<ContractSelectCubit>(),
+            marketContractRepository: marketContractRepository,
           ),
         ),
       ],

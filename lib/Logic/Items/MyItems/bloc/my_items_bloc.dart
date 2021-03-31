@@ -1,9 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
+import 'package:web3front/Model/Items/ItemPerContract.dart';
+import 'package:web3front/Model/Items/MyItemsPerContractModel.dart';
 
 import 'package:web3front/Services/contract_repository.dart';
 import 'package:web3front/Services/item_repository.dart';
@@ -61,6 +61,8 @@ class MyItemsBloc extends Bloc<MyItemsEvent, MyItemsState> {
                     name: item['name'],
                     image: item['image'],
                     tokenId: item['token_id'],
+                    isOnSale: item['isOnSale'],
+                    price: item['price'],
                   )
                 ],
               ),
@@ -86,110 +88,5 @@ class MyItemsBloc extends Bloc<MyItemsEvent, MyItemsState> {
         yield MyItemsFailed(error: e.toString());
       }
     }
-  }
-}
-
-class MyItemsPerContractModel {
-  final String contractAddress;
-  final String contractName;
-  final List<ItemPerContract> item;
-
-  MyItemsPerContractModel({
-    required this.contractAddress,
-    required this.contractName,
-    required this.item,
-  });
-
-  MyItemsPerContractModel copyWith({
-    String? contractAddress,
-    String? contractName,
-    List<ItemPerContract>? item,
-  }) {
-    return MyItemsPerContractModel(
-      contractAddress: contractAddress ?? this.contractAddress,
-      contractName: contractName ?? this.contractName,
-      item: item ?? this.item,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'contractAddress': contractAddress,
-      'contractName': contractName,
-      'item': item.map((x) => x.toMap()).toList(),
-    };
-  }
-
-  factory MyItemsPerContractModel.fromMap(Map<String, dynamic> map) {
-    return MyItemsPerContractModel(
-      contractAddress: map['contractAddress'],
-      contractName: map['contractName'],
-      item: List<ItemPerContract>.from(
-          map['item']?.map((x) => ItemPerContract.fromMap(x))),
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory MyItemsPerContractModel.fromJson(String source) =>
-      MyItemsPerContractModel.fromMap(json.decode(source));
-
-  @override
-  String toString() =>
-      'MyItemsPerContractModel(contractAddress: $contractAddress, contractName: $contractName, item: $item)';
-}
-
-class ItemPerContract {
-  final String ownerAddress;
-  final String name;
-  final String image;
-  final int tokenId;
-  ItemPerContract({
-    required this.ownerAddress,
-    required this.name,
-    required this.image,
-    required this.tokenId,
-  });
-
-  ItemPerContract copyWith({
-    String? ownerAddress,
-    String? name,
-    String? image,
-    int? tokenId,
-  }) {
-    return ItemPerContract(
-      ownerAddress: ownerAddress ?? this.ownerAddress,
-      name: name ?? this.name,
-      image: image ?? this.image,
-      tokenId: tokenId ?? this.tokenId,
-    );
-  }
-
-  Map<String, dynamic> toMap() {
-    return {
-      'ownerAddress': ownerAddress,
-      'name': name,
-      'image': image,
-      'tokenId': tokenId,
-    };
-  }
-
-  factory ItemPerContract.fromMap(Map<String, dynamic> map) {
-    return ItemPerContract(
-      ownerAddress: map['ownerAddress'],
-      name: map['name'],
-      image: map['image'],
-      tokenId: map['tokenId'],
-    );
-  }
-
-  String toJson() => json.encode(toMap());
-
-  factory ItemPerContract.fromJson(String source) =>
-      ItemPerContract.fromMap(json.decode(source));
-
-  @override
-  String toString() {
-    return 'ItemPerContract(ownerAddress: $ownerAddress, name: $name, image: $image, tokenId: $tokenId)';
   }
 }

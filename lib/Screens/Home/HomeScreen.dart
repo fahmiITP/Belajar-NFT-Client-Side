@@ -103,7 +103,52 @@ class _MyHomePageState extends State<MyHomePage> {
                       return Text("Metamask is not detected");
                     }
                   },
-                )
+                ),
+                // ElevatedButton(
+                //   onPressed: () async {
+                //     /// Web3 Provider
+                //     final web3 = Web3Provider(ethereum);
+                //     final newMessage = SellTokenMessageModel(
+                //       sellerAddress: ethereum.selectedAddress!,
+                //       originalContractAddress:
+                //           "0xD6344c3aC9f5e083B3a4BBAe763125bb5DE46D56",
+                //       price: EtherHelpers.etherToWei(ethers: 0.01),
+                //       tradeMarketAddress:
+                //           "0x09118A618D216b3a9e94EC7f2088D833B3641274",
+                //       tokenId: "0",
+                //     );
+
+                //     final encoded = Utils.arrayify(
+                //       Utils.keccak256(
+                //         DefaultABICoder.encode(
+                //           [
+                //             'address',
+                //             'address',
+                //             'address',
+                //             'uint256',
+                //             'uint256'
+                //           ],
+                //           [
+                //             newMessage.sellerAddress,
+                //             newMessage.originalContractAddress,
+                //             newMessage.tradeMarketAddress,
+                //             newMessage.price,
+                //             newMessage.tokenId
+                //           ],
+                //         ),
+                //       ),
+                //     );
+
+                //     final res = await promiseToFuture(
+                //         web3.getSigner().signMessage(encoded));
+                //     print(stringify(res));
+
+                //     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                //       content: SelectableText(res),
+                //     ));
+                //   },
+                //   child: Text("Sign Message"),
+                // )
               ],
             ),
           ),

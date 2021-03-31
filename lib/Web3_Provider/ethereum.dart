@@ -21,8 +21,29 @@ class Ethereum {
   @JS("request")
   external Future request(RequestParams params);
 
+  /// Add a listener to be triggered for each eventName event.
   @JS("on")
   external Future on(String eventName, Function func);
+
+  /// Add a listener to be triggered for only the next eventName event, at which time it will be removed.
+  @JS("once")
+  external Future once(String eventName, Function func);
+
+  /// Add a listener to be triggered for only the next eventName event, at which time it will be removed.
+  @JS("off")
+  external Future off(String eventName, Function func);
+
+  /// Add a listener to be triggered for only the next eventName event, at which time it will be removed.
+  @JS("removeAllListeners")
+  external Future removeAllListeners(List<String> events);
+
+  /// Return the number of listeners that are subscribed to event. If no event is provided, returns the total count of all events.
+  @JS("listenerCount")
+  external Future listenerCount(String eventName);
+
+  /// Return a list of listeners that are subscribed to event.
+  @JS("listeners")
+  external Future listeners();
 
   @JS("autoRefreshOnNetworkChange")
   external set autoRefreshOnNetworkChange(bool b);
@@ -36,4 +57,37 @@ class RequestParams {
 
   // Must have an unnamed factory constructor with named arguments.
   external factory RequestParams({String? method, List<dynamic>? params});
+}
+
+@JS()
+@anonymous
+class CurrencyParams {
+  external String get name;
+
+  external String get symbol;
+
+  external int get decimals;
+
+  external factory CurrencyParams({String name, String symbol, int decimals});
+}
+
+@JS()
+@anonymous
+class ChainParams {
+  external String get chainId;
+
+  external String get chainName;
+
+  external CurrencyParams get nativeCurrency;
+
+  external List<String> get rpcUrls;
+
+  external List<String> get blockExplorerUrls;
+
+  external factory ChainParams(
+      {String chainId,
+      String chainName,
+      CurrencyParams nativeCurrency,
+      List<String> rpcUrls,
+      List<String> blockExplorerUrls});
 }

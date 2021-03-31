@@ -170,7 +170,7 @@ class _MenusState extends State<Menus> {
             methodCaller(
               onPress: () async {
                 /// Get Human Readable ABI
-                final abi = await GetContractAbi().getContractAbi();
+                final abi = await GetContractAbi().getUserContractAbi();
 
                 /// Create a new Contract instance
                 final contract = Contract(

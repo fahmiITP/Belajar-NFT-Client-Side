@@ -9,11 +9,13 @@ abstract class SaleItemEvent extends Equatable {
 
 class SaleItemStart extends SaleItemEvent {
   final int tokenId;
+  final double price;
 
   SaleItemStart({
     required this.tokenId,
+    required this.price,
   });
 
   @override
-  List<Object> get props => [tokenId];
+  List<Object> get props => [tokenId, price];
 }

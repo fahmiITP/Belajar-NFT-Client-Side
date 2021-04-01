@@ -16,6 +16,7 @@ import 'package:web3front/Logic/Items/ItemForm/bloc/item_form_bloc.dart';
 import 'package:web3front/Logic/Items/MintItem/bloc/mint_item_bloc.dart';
 import 'package:web3front/Logic/Items/MyItems/bloc/my_items_bloc.dart';
 import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
+import 'package:web3front/Logic/Items/SelectItem/cubit/select_item_cubit.dart';
 import 'package:web3front/Logic/Metamask/Check_Metamask/bloc/metamask_check_bloc.dart';
 import 'package:web3front/Logic/Metamask/Connect_Metamask/bloc/metamask_connect_bloc.dart';
 import 'package:web3front/Routes/GeneratedRoutes.dart';
@@ -51,6 +52,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ItemFormBloc()),
         BlocProvider(create: (context) => ItemListBloc()),
         BlocProvider(create: (context) => MyItemsBloc()),
+        BlocProvider(create: (context) => SelectItemCubit()),
         BlocProvider(
           create: (context) => MintItemBloc(
             contractListBloc: context.read<ContractListBloc>(),

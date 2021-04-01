@@ -10,7 +10,7 @@ abstract class ItemListState extends Equatable {
 class ItemListInitial extends ItemListState {}
 
 class ItemListFetchSuccess extends ItemListState {
-  final List<dynamic> tokenList;
+  final ItemListModel tokenList;
 
   ItemListFetchSuccess({
     required this.tokenList,

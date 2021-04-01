@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Services/item_repository.dart';
 
 part 'item_list_event.dart';

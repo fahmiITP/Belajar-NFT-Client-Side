@@ -3,6 +3,7 @@ import 'package:web3front/Routes/RouteName.dart';
 import 'package:web3front/Screens/ContractCreation/ContractCreation.dart';
 import 'package:web3front/Screens/Home/HomeScreen.dart';
 import 'package:web3front/Screens/ItemCreation/ItemCreation.dart';
+import 'package:web3front/Screens/ItemDetail/ItemDetail.dart';
 import 'package:web3front/Screens/Menus.dart';
 import 'package:web3front/Screens/MyItems/MyItems.dart';
 
@@ -25,6 +26,9 @@ class Routes {
             builder: (_) => ItemCreation(), settings: settings);
       case RouteName.myItems:
         return MaterialPageRoute(builder: (_) => MyItems(), settings: settings);
+      case RouteName.itemDetail:
+        return MaterialPageRoute(
+            builder: (_) => ItemDetailScreen(), settings: settings);
       default:
         return MaterialPageRoute(
           builder: (_) => Scaffold(

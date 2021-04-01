@@ -3,9 +3,10 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
 import 'package:web3front/Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:web3front/Model/Items/ItemsModel.dart';
 
 class CustomDialog extends StatefulWidget {
-  final dynamic item;
+  final ItemsModel item;
   final VoidCallback burnCallback;
   final VoidCallback transferCallback;
   const CustomDialog({
@@ -24,7 +25,7 @@ class _CustomDialogState extends State<CustomDialog> {
 
   @override
   Widget build(BuildContext context) {
-    final itemName = widget.item['name'];
+    final itemName = widget.item.name;
     return Dialog(
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(10),
@@ -109,7 +110,7 @@ class _CustomDialogState extends State<CustomDialog> {
                     Navigator.of(context, rootNavigator: true).pop();
                     context.read<TransferItemBloc>().add(
                           TransferItemStart(
-                              tokenId: widget.item['token_id'],
+                              tokenId: widget.item.tokenId,
                               newOwner: textEditingController.text),
                         );
                   }
@@ -135,8 +136,7 @@ class _CustomDialogState extends State<CustomDialog> {
                   Navigator.of(context, rootNavigator: true).pop();
                   context.read<SaleItemBloc>().add(
                         SaleItemStart(
-                            tokenId: widget.item['token_id'],
-                            price: 1000000000000),
+                            tokenId: widget.item.tokenId, price: 1000000000000),
                       );
                 },
                 child: Container(

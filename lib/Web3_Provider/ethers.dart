@@ -70,6 +70,9 @@ class Utils {
   external static String getAddress(var address);
   external static String keccak256(var message);
   external static String solidityKeccak256(var types, var values);
+  external static String parseEther(var value);
+  external static String parseUnits(var value, var units);
+  external static String formatEther(var value);
 }
 
 @JS("utils.defaultAbiCoder")

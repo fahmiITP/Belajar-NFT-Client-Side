@@ -6,6 +6,7 @@ import 'package:responsive_framework/responsive_framework.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemList/bloc/item_list_bloc.dart';
 import 'package:web3front/Logic/Items/MintItem/bloc/mint_item_bloc.dart';
+import 'package:web3front/Routes/RouteName.dart';
 import 'package:web3front/Screens/ItemCreation/widgets/item_creation_dialog.dart';
 
 import 'package:web3front/Web3_Provider/ethereum.dart';
@@ -58,10 +59,10 @@ class _ItemCreationListState extends State<ItemCreationList> {
                   child: BlocBuilder<ItemListBloc, ItemListState>(
                     builder: (context, state) {
                       if (state is ItemListFetchSuccess) {
-                        if (state.tokenList.isNotEmpty) {
+                        if (state.tokenList.items.isNotEmpty) {
                           return ResponsiveGridView.builder(
                             alignment: Alignment.center,
-                            itemCount: state.tokenList.length,
+                            itemCount: state.tokenList.items.length,
                             gridDelegate: ResponsiveGridDelegate(
                               crossAxisExtent: 155,
                               crossAxisSpacing: 20,
@@ -77,29 +78,32 @@ class _ItemCreationListState extends State<ItemCreationList> {
                                           is MintItemLoading
                                       ? null
                                       : () {
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return CustomDialog(
-                                                item: state.tokenList[index],
-                                                burnCallback: () {
-                                                  Navigator.of(context,
-                                                          rootNavigator: true)
-                                                      .pop();
-                                                  context
-                                                      .read<BurnItemBloc>()
-                                                      .add(
-                                                        BurnItemStart(
-                                                            tokenId:
-                                                                state.tokenList[
-                                                                        index][
-                                                                    'token_id']),
-                                                      );
-                                                },
-                                                transferCallback: () {},
-                                              );
-                                            },
-                                          );
+                                          Navigator.of(context)
+                                              .pushNamed(RouteName.itemDetail);
+                                          // showDialog(
+                                          //   context: context,
+                                          //   builder: (context) {
+                                          //     return CustomDialog(
+                                          //       item: state
+                                          //           .tokenList.items[index],
+                                          //       burnCallback: () {
+                                          //         Navigator.of(context,
+                                          //                 rootNavigator: true)
+                                          //             .pop();
+                                          //         context
+                                          //             .read<BurnItemBloc>()
+                                          //             .add(
+                                          //               BurnItemStart(
+                                          //                   tokenId: state
+                                          //                       .tokenList
+                                          //                       .items[index]
+                                          //                       .tokenId),
+                                          //             );
+                                          //       },
+                                          //       transferCallback: () {},
+                                          //     );
+                                          //   },
+                                          // );
                                         },
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),
@@ -108,17 +112,18 @@ class _ItemCreationListState extends State<ItemCreationList> {
                                         Center(
                                           child: Builder(
                                             builder: (context) {
-                                              if (!state.tokenList[index]
-                                                      ['image']
+                                              if (!state
+                                                  .tokenList.items[index].image
                                                   .toString()
                                                   .contains("https://")) {
                                                 return Image.memory(
-                                                    base64Decode(
-                                                        state.tokenList[index]
-                                                            ['image']));
+                                                    base64Decode(state.tokenList
+                                                        .items[index].image));
                                               } else {
                                                 return Image.network(state
-                                                    .tokenList[index]['image']);
+                                                    .tokenList
+                                                    .items[index]
+                                                    .image);
                                               }
                                             },
                                           ),
@@ -130,7 +135,7 @@ class _ItemCreationListState extends State<ItemCreationList> {
                                             color:
                                                 Colors.black.withOpacity(0.8),
                                             child: Text(
-                                              state.tokenList[index]['name'],
+                                              state.tokenList.items[index].name,
                                               textAlign: TextAlign.center,
                                               style: TextStyle(
                                                   color: Colors.white),

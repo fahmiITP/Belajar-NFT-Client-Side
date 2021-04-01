@@ -150,58 +150,23 @@ class _ItemCreationState extends State<ItemCreation> {
               child: SingleChildScrollView(
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    return BlocListener<SaleItemBloc, SaleItemState>(
-                      listener: (context, state) {
-                        if (state is SaleItemLoading) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                "${state.progress}/${state.totalProgress} ${state.step}"),
-                            duration: Duration(days: 1),
-                          ));
-                        } else if (state is SaleItemSuccess) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text(
-                                "Token ${state.tokenId} has been put on sale successfully."),
-                            duration: Duration(seconds: 5),
-                          ));
-
-                          final contractAddress = (context
-                                  .read<ContractSelectCubit>()
-                                  .state as ContractSelectSelected)
-                              .contractAddress;
-                          context.read<ItemListBloc>().add(
-                                ItemListFetchStart(
-                                    ownerAddress: ethereum.selectedAddress!,
-                                    contractAddress: contractAddress),
-                              );
-                        } else if (state is SaleItemFailed) {
-                          ScaffoldMessenger.of(context).removeCurrentSnackBar();
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("${state.error}"),
-                            duration: Duration(seconds: 5),
-                          ));
-                        }
-                      },
-                      child: ResponsiveRowColumn(
-                        rowColumn: constraints.maxWidth < 1000 ? false : true,
-                        rowMainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        columnSpacing: 20,
-                        children: [
-                          ResponsiveRowColumnItem(
-                            child: ItemCreationForm(),
-                          ),
-                          ResponsiveRowColumnItem(
-                            child: constraints.maxWidth < 1000
-                                ? Divider()
-                                : VerticalDivider(),
-                          ),
-                          ResponsiveRowColumnItem(
-                            child: ItemCreationList(),
-                          ),
-                        ],
-                      ),
+                    return ResponsiveRowColumn(
+                      rowColumn: constraints.maxWidth < 1000 ? false : true,
+                      rowMainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      columnSpacing: 20,
+                      children: [
+                        ResponsiveRowColumnItem(
+                          child: ItemCreationForm(),
+                        ),
+                        ResponsiveRowColumnItem(
+                          child: constraints.maxWidth < 1000
+                              ? Divider()
+                              : VerticalDivider(),
+                        ),
+                        ResponsiveRowColumnItem(
+                          child: ItemCreationList(),
+                        ),
+                      ],
                     );
                   },
                 ),

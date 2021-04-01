@@ -2,13 +2,14 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:web3front/Global/Endpoints.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:web3front/Model/Items/ItemsModel.dart';
 
 class ItemRepository {
   /// Initialize Firebase Storage Instance
   FirebaseStorage storage = FirebaseStorage.instance;
 
   /// Get contract token
-  Future<List<dynamic>?> getContractTokens({
+  Future<ItemListModel?> getContractTokens({
     required String contractAddress,
     required String ownerAddress,
   }) async {
@@ -21,12 +22,12 @@ class ItemRepository {
         },
       );
 
-      List<dynamic> result =
-          List<dynamic>.from(jsonDecode(response.body)['rows']);
+      ItemListModel result =
+          ItemListModel.fromJson(jsonDecode(response.body)['rows']);
       return result;
     } catch (e) {
       print(e);
-      return [e.toString()];
+      throw e;
     }
   }
 

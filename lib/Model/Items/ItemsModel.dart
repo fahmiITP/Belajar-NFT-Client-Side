@@ -24,7 +24,7 @@ class ItemsModel {
   final String description;
   final String image;
   final int? isOnSale;
-  final int? price;
+  final double? price;
 
   ItemsModel({
     required this.id,
@@ -47,7 +47,7 @@ class ItemsModel {
     String? description,
     String? image,
     int? isOnSale,
-    int? price,
+    double? price,
   }) =>
       ItemsModel(
         id: id ?? this.id,

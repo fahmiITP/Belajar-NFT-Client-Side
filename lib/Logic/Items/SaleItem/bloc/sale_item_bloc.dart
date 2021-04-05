@@ -115,7 +115,7 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
           yield SaleItemLoading(
               progress: 2,
               totalProgress: totalProgress,
-              step: "Requesting Market Contract to Operate All of Your Token");
+              step: "Requesting Market Contract to Operate All of Your Tokens");
 
           /// Set Token Approval
           final tokenApproval = await promiseToFuture(
@@ -198,6 +198,50 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
         } else {
           yield SaleItemFailed(error: e.toString());
         }
+      }
+    } else if (event is SaleItemCancelStart) {
+      final totalProgress = 2;
+      yield SaleItemLoading(
+          progress: 1,
+          step: "Requesting Signature",
+          totalProgress: totalProgress);
+
+      /// Hash the message
+      final msgHash = Utils.keccak256(
+        DefaultABICoder.encode(
+          ['address', 'address', 'uint256'],
+          [
+            ethereum.selectedAddress!,
+            event.contractAddress,
+            event.tokenId,
+          ],
+        ),
+      );
+
+      /// Add Prefix
+      final arrayify = Utils.arrayify(msgHash);
+
+      try {
+        /// Request for Signature
+        await promiseToFuture(web3.getSigner().signMessage(arrayify));
+
+        /// Requesting for signature
+        yield SaleItemLoading(
+            progress: 2,
+            totalProgress: totalProgress,
+            step: "Cancelling your token listing, please wait");
+
+        /// Update sale state on DB
+        await marketContractRepository.cancelTokenListing(
+            tokenId: event.tokenId.toString(),
+            contractAddress: event.contractAddress,
+            tokenOwner: ethereum.selectedAddress!);
+
+        yield SaleItemSuccess(
+            tokenId: event.tokenId.toString(),
+            message: "Your token has been taken out from market");
+      } catch (e) {
+        yield SaleItemFailed(error: e.toString());
       }
     }
   }

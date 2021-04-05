@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_framework/responsive_framework.dart';
+import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
 import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Screens/ItemDetail/widgets/ItemDetailDescription.dart';
 import 'package:web3front/Screens/ItemDetail/widgets/ItemDetailImage.dart';
@@ -76,9 +78,40 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
                         width: constraints.maxWidth < 800
                             ? constraints.maxWidth
                             : constraints.maxWidth * 0.6,
-                        child: Container(
-                          child: ItemDetailDescriptionScreen(
-                            item: item,
+                        child: BlocListener<SaleItemBloc, SaleItemState>(
+                          listener: (context, state) {
+                            if (state is SaleItemLoading) {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    "${state.progress}/${state.totalProgress} ${state.step}"),
+                                duration: Duration(days: 1),
+                              ));
+                            } else if (state is SaleItemSuccess) {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text(
+                                    "${state.message}. Token ID : ${state.tokenId}"),
+                                duration: Duration(seconds: 5),
+                              ));
+                            } else if (state is SaleItemFailed) {
+                              ScaffoldMessenger.of(context)
+                                  .removeCurrentSnackBar();
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text("${state.error}"),
+                                duration: Duration(seconds: 5),
+                              ));
+                            }
+                          },
+                          child: Container(
+                            child: ItemDetailDescriptionScreen(
+                              item: item,
+                            ),
                           ),
                         ),
                       ),

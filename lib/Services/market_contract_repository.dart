@@ -53,6 +53,29 @@ class MarketContractRepository {
     }
   }
 
+  /// Put token listing
+  Future<dynamic?> cancelTokenListing({
+    required String tokenId,
+    required String contractAddress,
+    required String tokenOwner,
+  }) async {
+    try {
+      var response = await http.post(
+        Uri.parse("${Endpoints.apiBaseUrl}market/cancelTokenSale"),
+        body: {
+          "token_id": tokenId.toString(),
+          "contract_address": contractAddress,
+          "token_owner": tokenOwner
+        },
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      throw e.toString();
+    }
+  }
+
   /// Get all on-sale token
   Future<ItemListModel> getAllOnSaleToken() async {
     try {

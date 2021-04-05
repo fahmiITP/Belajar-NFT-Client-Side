@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:js/js.dart';
 import 'package:web3front/Helpers/ChainIDConverter.dart';
 import 'package:web3front/Helpers/SnackbarHelper.dart';
 import 'package:web3front/Logic/Metamask/Check_Metamask/bloc/metamask_check_bloc.dart';
@@ -17,13 +18,26 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   String get title => widget.title ?? "Title";
+  String? chainId;
 
   @override
   void initState() {
     super.initState();
 
+    // Listen on chain change
+    ethereum.on("chainChanged", allowInterop((f) {
+      setState(() {
+        chainId = ChainIDConverter.convertToString(chainIdHex: f);
+      });
+    }));
+    // Listen on account change
+    ethereum.on("accountsChanged", allowInterop((f) {
+      setState(() {});
+    }));
+
     /// Refresh the Screen after build
     WidgetsBinding.instance?.addPostFrameCallback((_) {
+      // Start metamask check
       context.read<MetamaskCheckBloc>().add(MetamaskCheckStart());
     });
   }
@@ -40,7 +54,9 @@ class _MyHomePageState extends State<MyHomePage> {
             if (state is MetamaskCheckInstalled) {
               return Center(
                 child: Text(
-                  ChainIDConverter.convertToString(chainIdHex: state.chainId),
+                  chainId ??
+                      ChainIDConverter.convertToString(
+                          chainIdHex: state.chainId),
                 ),
               );
             } else {

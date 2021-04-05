@@ -19,3 +19,16 @@ class SaleItemStart extends SaleItemEvent {
   @override
   List<Object> get props => [tokenId, price];
 }
+
+class SaleItemCancelStart extends SaleItemEvent {
+  final int tokenId;
+  final String contractAddress;
+
+  SaleItemCancelStart({
+    required this.tokenId,
+    required this.contractAddress,
+  });
+
+  @override
+  List<Object> get props => [tokenId, contractAddress];
+}

@@ -164,7 +164,49 @@ class _ItemCreationState extends State<ItemCreation> {
                               : VerticalDivider(),
                         ),
                         ResponsiveRowColumnItem(
-                          child: ItemCreationList(),
+                          child: BlocListener<SaleItemBloc, SaleItemState>(
+                            listener: (context, state) {
+                              if (state is SaleItemLoading) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(
+                                      "${state.progress}/${state.totalProgress} ${state.step}"),
+                                  duration: Duration(days: 1),
+                                ));
+                              } else if (state is SaleItemSuccess) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text(
+                                      "Token listed on sale successfully, Token ID : ${state.tokenId}"),
+                                  duration: Duration(seconds: 5),
+                                ));
+
+                                final contractAddress = (context
+                                        .read<ContractSelectCubit>()
+                                        .state as ContractSelectSelected)
+                                    .contractAddress;
+                                context.read<ItemListBloc>().add(
+                                      ItemListFetchStart(
+                                          ownerAddress:
+                                              ethereum.selectedAddress!,
+                                          contractAddress: contractAddress),
+                                    );
+                              } else if (state is SaleItemFailed) {
+                                ScaffoldMessenger.of(context)
+                                    .removeCurrentSnackBar();
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(SnackBar(
+                                  content: Text("${state.error}"),
+                                  duration: Duration(seconds: 5),
+                                ));
+                              }
+                            },
+                            child: ItemCreationList(),
+                          ),
                         ),
                       ],
                     );

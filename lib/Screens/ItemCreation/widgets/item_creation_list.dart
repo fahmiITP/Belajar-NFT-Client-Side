@@ -78,32 +78,32 @@ class _ItemCreationListState extends State<ItemCreationList> {
                                           is MintItemLoading
                                       ? null
                                       : () {
-                                          Navigator.of(context)
-                                              .pushNamed(RouteName.itemDetail);
-                                          // showDialog(
-                                          //   context: context,
-                                          //   builder: (context) {
-                                          //     return CustomDialog(
-                                          //       item: state
-                                          //           .tokenList.items[index],
-                                          //       burnCallback: () {
-                                          //         Navigator.of(context,
-                                          //                 rootNavigator: true)
-                                          //             .pop();
-                                          //         context
-                                          //             .read<BurnItemBloc>()
-                                          //             .add(
-                                          //               BurnItemStart(
-                                          //                   tokenId: state
-                                          //                       .tokenList
-                                          //                       .items[index]
-                                          //                       .tokenId),
-                                          //             );
-                                          //       },
-                                          //       transferCallback: () {},
-                                          //     );
-                                          //   },
-                                          // );
+                                          // Navigator.of(context)
+                                          //     .pushNamed(RouteName.itemDetail);
+                                          showDialog(
+                                            context: context,
+                                            builder: (context) {
+                                              return CustomDialog(
+                                                item: state
+                                                    .tokenList.items[index],
+                                                burnCallback: () {
+                                                  Navigator.of(context,
+                                                          rootNavigator: true)
+                                                      .pop();
+                                                  context
+                                                      .read<BurnItemBloc>()
+                                                      .add(
+                                                        BurnItemStart(
+                                                            tokenId: state
+                                                                .tokenList
+                                                                .items[index]
+                                                                .tokenId),
+                                                      );
+                                                },
+                                                transferCallback: () {},
+                                              );
+                                            },
+                                          );
                                         },
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),

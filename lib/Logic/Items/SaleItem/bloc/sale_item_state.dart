@@ -11,13 +11,15 @@ class SaleItemInitial extends SaleItemState {}
 
 class SaleItemSuccess extends SaleItemState {
   final String tokenId;
+  final String? message;
 
   SaleItemSuccess({
     required this.tokenId,
+    this.message,
   });
 
   @override
-  List<Object> get props => [tokenId];
+  List<Object> get props => [tokenId, message ?? ""];
 }
 
 class SaleItemFailed extends SaleItemState {

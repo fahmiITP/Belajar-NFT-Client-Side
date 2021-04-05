@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
+import 'package:js/js.dart';
 import 'package:js/js_util.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 

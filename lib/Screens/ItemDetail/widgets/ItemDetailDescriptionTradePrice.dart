@@ -19,24 +19,32 @@ class ItemDetailDescriptionTradePrice extends StatelessWidget {
     return Builder(
       builder: (context) {
         if (ethereum.selectedAddress == item.tokenOwner) {
-          return TextField(
-            controller: priceTextController,
-            maxLength: 20,
-            inputFormatters: [
-              FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))
-            ],
-            onChanged: (value) {
-              print(Utils.parseEther(value));
-            },
-            decoration: InputDecoration(
-              border: OutlineInputBorder(),
-              isDense: true,
-              counterText: "",
-              prefixText: "ETH ",
-            ),
-          );
+          if (item.isOnSale == 0) {
+            return TextField(
+              controller: priceTextController,
+              maxLength: 20,
+              inputFormatters: [
+                FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))
+              ],
+              onChanged: (value) {
+                print(Utils.parseEther(value));
+              },
+              decoration: InputDecoration(
+                border: OutlineInputBorder(),
+                isDense: true,
+                counterText: "",
+                prefixText: "ETH ",
+              ),
+            );
+          } else {
+            return SelectableText(
+              "${Utils.formatEther(item.price!.toString())} ETH",
+              style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
+            );
+          }
         } else {
-          if (item.isOnSale == 1) {
+          if (ethereum.selectedAddress != item.tokenOwner &&
+              item.isOnSale == 1) {
             return SelectableText(
               "${Utils.formatEther(item.price!.toString())} ETH",
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),

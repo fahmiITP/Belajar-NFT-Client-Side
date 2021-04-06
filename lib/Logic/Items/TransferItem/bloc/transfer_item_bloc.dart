@@ -1,9 +1,11 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
+import 'package:web3front/Global/LocalStorageConstant.dart';
 
 import 'package:web3front/Logic/Contracts/ContractList/bloc/contract_list_bloc.dart';
 import 'package:web3front/Logic/Contracts/ContractSelect/cubit/contract_select_cubit.dart';
@@ -37,13 +39,28 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
           step: "Transfering Token (Please Confirm the Transaction)");
 
       try {
-        /// Current Contract Address
-        final address = (contractSelectCubit.state as ContractSelectSelected)
-            .contractAddress;
+        /// Get contract address
+        String address = "";
 
-        /// Human Readable ABI
-        final abi = (contractListBloc.state as ContractListFetchSuccess)
-            .contractReadableAbi;
+        /// Get contract abi
+        List<String> abi = [];
+
+        /// Current User Contract Address
+        if (contractSelectCubit.state is ContractSelectInitial) {
+          address = window.localStorage[LocalStorageConstant.selectedContract]!;
+        } else {
+          address = (contractSelectCubit.state as ContractSelectSelected)
+              .contractAddress;
+        }
+
+        /// User Contract Human Readable ABI
+        if (contractListBloc.state is ContractListInitial) {
+          abi = List<String>.from(jsonDecode(
+              window.localStorage[LocalStorageConstant.userContractAbi]!));
+        } else {
+          abi = (contractListBloc.state as ContractListFetchSuccess)
+              .contractReadableAbi;
+        }
 
         /// Create a new Contract instance
         final contract = Contract(address, abi, web3);

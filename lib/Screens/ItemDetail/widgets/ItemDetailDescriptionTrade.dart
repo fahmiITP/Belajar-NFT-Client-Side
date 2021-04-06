@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:js/js.dart';
+import 'package:web3front/Helpers/EtherHelpers.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
 import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
-import 'package:web3front/Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
-
 import 'package:web3front/Model/Items/ItemsModel.dart';
+import 'package:web3front/Screens/ItemDetail/widgets/ItemDetailBlocListener.dart';
 import 'package:web3front/Screens/ItemDetail/widgets/ItemDetailDescriptionTradePrice.dart';
+import 'package:web3front/Screens/ItemDetail/widgets/ItemDetailTransferDialog.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
-import 'package:web3front/Web3_Provider/ethers.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 class ItemDetailDescriptionTrade extends StatefulWidget {
@@ -24,13 +24,15 @@ class ItemDetailDescriptionTrade extends StatefulWidget {
 
 class _ItemDetailDescriptionTradeState
     extends State<ItemDetailDescriptionTrade> {
-  TextEditingController priceTextController = TextEditingController();
+  ItemsModel get item => widget.item;
+  String price = "";
+
   @override
   void initState() {
     super.initState();
     // Listen to the account change, refresh the screen if account changed
     ethereum.on("accountsChanged", allowInterop((f) {
-      setState(() {});
+      if (mounted) setState(() {});
     }));
   }
 
@@ -56,7 +58,12 @@ class _ItemDetailDescriptionTradeState
             /// Token Price Section Builder
             ItemDetailDescriptionTradePrice(
               item: widget.item,
-              priceTextController: priceTextController,
+              onChanged: (text) {
+                if (mounted)
+                  setState(() {
+                    this.price = text;
+                  });
+              },
             ),
 
             SizedBox(height: 20),
@@ -64,18 +71,83 @@ class _ItemDetailDescriptionTradeState
             /// Buy or Sell Button
             Builder(
               builder: (context) {
-                if (ethereum.selectedAddress! == widget.item.tokenOwner &&
+                if (ethereum.selectedAddress!.toLowerCase() ==
+                        widget.item.tokenOwner.toLowerCase() &&
                     widget.item.isOnSale == 0) {
-                  return Container(
-                    width: 200,
-                    child: ElevatedButton(
+                  return Wrap(children: [
+                    /// Sell Token
+                    Container(
+                      width: 200,
+                      margin: EdgeInsets.all(4),
+                      child: ElevatedButton(
+                          onPressed: () {
+                            if (price.trim().isNotEmpty) {
+                              context.read<SaleItemBloc>().add(
+                                    SaleItemStart(
+                                      tokenId: item.tokenId,
+                                      price: EtherHelpers.etherToWei(
+                                        ethers: double.parse(price),
+                                      ),
+                                    ),
+                                  );
+                            } else {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(SnackBar(
+                                content: Text("Price Value is Invalid"),
+                              ));
+                            }
+                          },
+                          child: Text("Sell")),
+                    ),
+
+                    /// Transfer Token
+                    Container(
+                      width: 200,
+                      margin: EdgeInsets.all(4),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                              return Colors.green;
+                            },
+                          ),
+                        ),
                         onPressed: () {
-                          print(ethereum.selectedAddress);
+                          showDialog(
+                            context: context,
+                            builder: (context) =>
+                                ItemDetailTransferDialog(item: item),
+                          );
                         },
-                        child: Text("Sell")),
-                  );
-                } else if (ethereum.selectedAddress! ==
-                        widget.item.tokenOwner &&
+                        child: Text("Transfer the Token"),
+                      ),
+                    ),
+
+                    /// Burn Token
+                    Container(
+                      width: 200,
+                      margin: EdgeInsets.all(4),
+                      child: ElevatedButton(
+                        style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.resolveWith<Color>(
+                            (Set<MaterialState> states) {
+                              return Colors.red;
+                            },
+                          ),
+                        ),
+                        onPressed: () {
+                          context.read<BurnItemBloc>().add(
+                                BurnItemStart(tokenId: item.tokenId),
+                              );
+                        },
+                        child: Text("Burn the Token"),
+                      ),
+                    ),
+                  ]);
+                } else if (ethereum.selectedAddress!.toLowerCase() ==
+                        widget.item.tokenOwner.toLowerCase() &&
                     widget.item.isOnSale == 1) {
                   return Wrap(children: [
                     /// Cancel Sell
@@ -108,57 +180,9 @@ class _ItemDetailDescriptionTradeState
                         onPressed: () {
                           showDialog(
                             context: context,
-                            builder: (context) {
-                              return Dialog(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10),
-                                ),
-                                backgroundColor: Colors.transparent,
-                                child: Container(
-                                  width: 200,
-                                  height: 150,
-                                  padding: EdgeInsets.all(20),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(10),
-                                    color: Colors.white,
-                                  ),
-                                  child: Column(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      TextFormField(
-                                        decoration: InputDecoration(
-                                            border: OutlineInputBorder(),
-                                            hintText:
-                                                "Enter Destination Address Here",
-                                            hintStyle: TextStyle(fontSize: 14)),
-                                      ),
-                                      ElevatedButton(
-                                        style: ButtonStyle(
-                                          backgroundColor: MaterialStateProperty
-                                              .resolveWith<Color>(
-                                            (Set<MaterialState> states) {
-                                              return Colors.green;
-                                            },
-                                          ),
-                                        ),
-                                        onPressed: () {
-                                          Navigator.of(context,
-                                                  rootNavigator: true)
-                                              .pop();
-                                        },
-                                        child: Text("Transfer Token"),
-                                      )
-                                    ],
-                                  ),
-                                ),
-                              );
-                            },
+                            builder: (context) =>
+                                ItemDetailTransferDialog(item: item),
                           );
-                          // context.read<TransferItemBloc>().add(
-                          //       TransferItemStart(
-                          //           tokenId: widget.item.tokenId, newOwner: newOwner),
-                          //     );
                         },
                         child: Text("Transfer the Token"),
                       ),
@@ -178,9 +202,9 @@ class _ItemDetailDescriptionTradeState
                           ),
                         ),
                         onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                            content: Text("Burn Token"),
-                          ));
+                          context.read<BurnItemBloc>().add(
+                                BurnItemStart(tokenId: item.tokenId),
+                              );
                         },
                         child: Text("Burn the Token"),
                       ),
@@ -197,7 +221,8 @@ class _ItemDetailDescriptionTradeState
                   );
                 }
               },
-            )
+            ),
+            ItemDetailBlocListener(),
           ],
         ),
       ),

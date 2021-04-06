@@ -5,4 +5,5 @@ class RouteName {
   static const String itemForm = '/itemForm';
   static const String myItems = "/myItems";
   static const String itemDetail = "/itemDetail";
+  static const String market = "/market";
 }

@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 
 import 'package:web3front/Model/Items/ItemsModel.dart';
@@ -14,7 +16,15 @@ class ItemDetailImage extends StatelessWidget {
     return Container(
       alignment: Alignment.topCenter,
       height: 400,
-      child: Image.network(item.image),
+      child: Builder(
+        builder: (context) {
+          if (item.image.contains("https://")) {
+            return Image.network(item.image);
+          } else {
+            return Image.memory(base64Decode(item.image));
+          }
+        },
+      ),
     );
   }
 }

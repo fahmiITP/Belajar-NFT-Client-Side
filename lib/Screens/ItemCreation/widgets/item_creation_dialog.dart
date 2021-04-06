@@ -175,4 +175,10 @@ class _CustomDialogState extends State<CustomDialog> {
       ),
     );
   }
+
+  @override
+  void dispose() {
+    this.textEditingController.dispose();
+    super.dispose();
+  }
 }

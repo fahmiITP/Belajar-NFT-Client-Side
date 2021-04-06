@@ -121,12 +121,12 @@ class _MyHomePageState extends State<MyHomePage> {
                   },
                 ),
                 SizedBox(height: 12),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).pushNamed(RouteName.itemDetail);
-                  },
-                  child: Text("To Item detail"),
-                )
+                // ElevatedButton(
+                //   onPressed: () {
+                //     Navigator.of(context).pushNamed(RouteName.itemDetail);
+                //   },
+                //   child: Text("To Item detail"),
+                // )
                 // ElevatedButton(
                 //   onPressed: () async {
                 //     /// Web3 Provider

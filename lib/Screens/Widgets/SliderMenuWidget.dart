@@ -50,6 +50,11 @@ class SliderMenuWidget extends StatelessWidget {
               Navigator.of(context).pushNamed(RouteName.myItems);
             }
           }),
+          sliderItem('Market', Icons.shopping_cart_outlined, context, () {
+            if (!(ModalRoute.of(context)?.settings.name == RouteName.market)) {
+              Navigator.of(context).pushNamed(RouteName.market);
+            }
+          }),
         ],
       ),
     );

@@ -3,11 +3,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_framework/responsive_framework.dart';
-import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemList/bloc/item_list_bloc.dart';
 import 'package:web3front/Logic/Items/MintItem/bloc/mint_item_bloc.dart';
+import 'package:web3front/Logic/Items/SelectItem/cubit/select_item_cubit.dart';
 import 'package:web3front/Routes/RouteName.dart';
-import 'package:web3front/Screens/ItemCreation/widgets/item_creation_dialog.dart';
 
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
@@ -78,32 +77,40 @@ class _ItemCreationListState extends State<ItemCreationList> {
                                           is MintItemLoading
                                       ? null
                                       : () {
-                                          // Navigator.of(context)
-                                          //     .pushNamed(RouteName.itemDetail);
-                                          showDialog(
-                                            context: context,
-                                            builder: (context) {
-                                              return CustomDialog(
-                                                item: state
-                                                    .tokenList.items[index],
-                                                burnCallback: () {
-                                                  Navigator.of(context,
-                                                          rootNavigator: true)
-                                                      .pop();
-                                                  context
-                                                      .read<BurnItemBloc>()
-                                                      .add(
-                                                        BurnItemStart(
-                                                            tokenId: state
-                                                                .tokenList
-                                                                .items[index]
-                                                                .tokenId),
-                                                      );
-                                                },
-                                                transferCallback: () {},
-                                              );
-                                            },
+                                          context
+                                              .read<SelectItemCubit>()
+                                              .selectItem(
+                                                  selectedItem: state
+                                                      .tokenList.items[index]);
+                                          Navigator.of(context).pushNamed(
+                                            RouteName.itemDetail,
+                                            arguments:
+                                                state.tokenList.items[index],
                                           );
+                                          // showDialog(
+                                          //   context: context,
+                                          //   builder: (context) {
+                                          //     return CustomDialog(
+                                          //       item: state
+                                          //           .tokenList.items[index],
+                                          //       burnCallback: () {
+                                          //         Navigator.of(context,
+                                          //                 rootNavigator: true)
+                                          //             .pop();
+                                          //         context
+                                          //             .read<BurnItemBloc>()
+                                          //             .add(
+                                          //               BurnItemStart(
+                                          //                   tokenId: state
+                                          //                       .tokenList
+                                          //                       .items[index]
+                                          //                       .tokenId),
+                                          //             );
+                                          //       },
+                                          //       transferCallback: () {},
+                                          //     );
+                                          //   },
+                                          // );
                                         },
                                   child: Padding(
                                     padding: EdgeInsets.all(8.0),

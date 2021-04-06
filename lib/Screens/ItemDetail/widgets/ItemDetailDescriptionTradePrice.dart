@@ -5,30 +5,36 @@ import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
 
-class ItemDetailDescriptionTradePrice extends StatelessWidget {
+class ItemDetailDescriptionTradePrice extends StatefulWidget {
   final ItemsModel item;
-  final TextEditingController priceTextController;
+  final Function(String) onChanged;
   const ItemDetailDescriptionTradePrice({
     Key? key,
     required this.item,
-    required this.priceTextController,
+    required this.onChanged,
   }) : super(key: key);
 
+  @override
+  _ItemDetailDescriptionTradePriceState createState() =>
+      _ItemDetailDescriptionTradePriceState();
+}
+
+class _ItemDetailDescriptionTradePriceState
+    extends State<ItemDetailDescriptionTradePrice> {
+  TextEditingController priceTextController = TextEditingController();
   @override
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        if (ethereum.selectedAddress == item.tokenOwner) {
-          if (item.isOnSale == 0) {
+        if (ethereum.selectedAddress == widget.item.tokenOwner) {
+          if (widget.item.isOnSale == 0) {
             return TextField(
               controller: priceTextController,
               maxLength: 20,
               inputFormatters: [
                 FilteringTextInputFormatter.allow(RegExp(r'^\d+\.?\d*'))
               ],
-              onChanged: (value) {
-                print(Utils.parseEther(value));
-              },
+              onChanged: widget.onChanged,
               decoration: InputDecoration(
                 border: OutlineInputBorder(),
                 isDense: true,
@@ -38,15 +44,15 @@ class ItemDetailDescriptionTradePrice extends StatelessWidget {
             );
           } else {
             return SelectableText(
-              "${Utils.formatEther(item.price!.toString())} ETH",
+              "${Utils.formatEther(widget.item.price!.toString())} ETH",
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
             );
           }
         } else {
-          if (ethereum.selectedAddress != item.tokenOwner &&
-              item.isOnSale == 1) {
+          if (ethereum.selectedAddress != widget.item.tokenOwner &&
+              widget.item.isOnSale == 1) {
             return SelectableText(
-              "${Utils.formatEther(item.price!.toString())} ETH",
+              "${Utils.formatEther(widget.item.price!.toString())} ETH",
               style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18),
             );
           } else {
@@ -58,5 +64,11 @@ class ItemDetailDescriptionTradePrice extends StatelessWidget {
         }
       },
     );
+  }
+
+  @override
+  void dispose() {
+    this.priceTextController.dispose();
+    super.dispose();
   }
 }

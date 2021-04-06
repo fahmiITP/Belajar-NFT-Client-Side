@@ -4,10 +4,14 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
-import 'package:web3front/Helpers/EtherHelpers.dart';
+import 'package:web3front/Global/LocalStorageConstant.dart';
+import 'dart:html';
 
+import 'package:web3front/Helpers/EtherHelpers.dart';
 import 'package:web3front/Logic/Contracts/ContractList/bloc/contract_list_bloc.dart';
 import 'package:web3front/Logic/Contracts/ContractSelect/cubit/contract_select_cubit.dart';
+import 'package:web3front/Logic/Items/SelectItem/cubit/select_item_cubit.dart';
+import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Services/item_repository.dart';
 import 'package:web3front/Services/market_contract_repository.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
@@ -23,10 +27,12 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
   var web3 = Web3Provider(ethereum);
   final ContractListBloc contractListBloc;
   final ContractSelectCubit contractSelectCubit;
+  final SelectItemCubit selectItemCubit;
   SaleItemBloc({
+    required this.marketContractRepository,
     required this.contractListBloc,
     required this.contractSelectCubit,
-    required this.marketContractRepository,
+    required this.selectItemCubit,
   }) : super(SaleItemInitial());
 
   @override
@@ -34,13 +40,31 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
     SaleItemEvent event,
   ) async* {
     if (event is SaleItemStart) {
+      yield SaleItemLoading(
+          progress: 1, totalProgress: 5, step: "Contacting Trade Market");
+
+      /// Get contract address
+      String address = "";
+
+      /// Get contract abi
+      List<String> abi = [];
+
       /// Current User Contract Address
-      final address =
-          (contractSelectCubit.state as ContractSelectSelected).contractAddress;
+      if (contractSelectCubit.state is ContractSelectInitial) {
+        address = window.localStorage[LocalStorageConstant.selectedContract]!;
+      } else {
+        address = (contractSelectCubit.state as ContractSelectSelected)
+            .contractAddress;
+      }
 
       /// User Contract Human Readable ABI
-      final abi = (contractListBloc.state as ContractListFetchSuccess)
-          .contractReadableAbi;
+      if (contractListBloc.state is ContractListInitial) {
+        abi = List<String>.from(jsonDecode(
+            window.localStorage[LocalStorageConstant.userContractAbi]!));
+      } else {
+        abi = (contractListBloc.state as ContractListFetchSuccess)
+            .contractReadableAbi;
+      }
 
       /// Create a new User Contract instance
       final contract = Contract(address, abi, web3);
@@ -60,13 +84,7 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
       ));
 
       /// Determine total progress of required logics
-      final totalProgress = isApprovedRequest ? 3 : 5;
-
-      /// Gve the first loading
-      yield SaleItemLoading(
-          progress: 1,
-          totalProgress: totalProgress,
-          step: "Preparing the token sale");
+      final totalProgress = 5;
 
       try {
         if (isApprovedRequest) {
@@ -80,7 +98,7 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
 
           /// Requesting for signature
           yield SaleItemLoading(
-              progress: 2,
+              progress: 4,
               totalProgress: totalProgress,
               step: "Requesting Signature (Please Sign the Message)");
 
@@ -92,9 +110,9 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
 
           /// Requesting for signature
           yield SaleItemLoading(
-              progress: 3,
+              progress: 5,
               totalProgress: totalProgress,
-              step: "Putting Token on Sale");
+              step: "Listing Token for Sale");
 
           try {
             await marketContractRepository.putTokenOnSale(
@@ -106,7 +124,22 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
               contractAddress: address,
               tokenOwner: ethereum.selectedAddress!,
             );
-            yield SaleItemSuccess(tokenId: event.tokenId.toString());
+
+            /// Create a copy of item with price set to null, and on sale is false
+            ItemsModel item = (selectItemCubit.state as SelectItemSelected)
+                .selectedItem
+                .copyWith(
+                  isOnSale: 1,
+                  price: event.price,
+                );
+
+            /// Emit the new item
+            selectItemCubit.selectItem(selectedItem: item);
+
+            /// Yield success state
+            yield SaleItemSuccess(
+                tokenId: event.tokenId.toString(),
+                message: "Token Listed On Sale Successfully");
           } catch (e) {
             yield SaleItemFailed(error: e.toString());
           }
@@ -172,7 +205,7 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
             yield SaleItemLoading(
                 progress: 5,
                 totalProgress: totalProgress,
-                step: "Putting Token on Sale");
+                step: "Listing Token for Sale");
 
             try {
               await marketContractRepository.putTokenOnSale(
@@ -184,7 +217,22 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
                 contractAddress: address,
                 tokenOwner: ethereum.selectedAddress!,
               );
-              yield SaleItemSuccess(tokenId: event.tokenId.toString());
+
+              /// Create a copy of item with price set to null, and on sale is false
+              ItemsModel item = (selectItemCubit.state as SelectItemSelected)
+                  .selectedItem
+                  .copyWith(
+                    isOnSale: 1,
+                    price: event.price,
+                  );
+
+              /// Emit the new item
+              selectItemCubit.selectItem(selectedItem: item);
+
+              /// Yield success state
+              yield SaleItemSuccess(
+                  tokenId: event.tokenId.toString(),
+                  message: "Token Listed On Sale Successfully");
             } catch (e) {
               yield SaleItemFailed(error: e.toString());
             }
@@ -237,11 +285,26 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
             contractAddress: event.contractAddress,
             tokenOwner: ethereum.selectedAddress!);
 
+        /// Create a copy of item with price set to null, and on sale is false
+        ItemsModel item =
+            (selectItemCubit.state as SelectItemSelected).selectedItem.copyWith(
+                  isOnSale: 0,
+                  price: null,
+                );
+
+        /// Emit the new item
+        selectItemCubit.selectItem(selectedItem: item);
+
         yield SaleItemSuccess(
             tokenId: event.tokenId.toString(),
             message: "Your token has been taken out from market");
       } catch (e) {
-        yield SaleItemFailed(error: e.toString());
+        if (e.toString() == "[object Object]") {
+          final error = jsonDecode(stringify(e));
+          yield SaleItemFailed(error: error['message']);
+        } else {
+          yield SaleItemFailed(error: e.toString());
+        }
       }
     }
   }

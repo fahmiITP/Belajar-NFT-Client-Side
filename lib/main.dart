@@ -11,6 +11,7 @@ import 'package:web3front/Logic/Contracts/ContractForm/bloc/contract_form_bloc.d
 import 'package:web3front/Logic/Contracts/ContractList/bloc/contract_list_bloc.dart';
 import 'package:web3front/Logic/Contracts/ContractSelect/cubit/contract_select_cubit.dart';
 import 'package:web3front/Logic/Contracts/CreateContract/bloc/contract_create_bloc.dart';
+import 'package:web3front/Logic/Ethereum/cubit/ethereum_price_cubit.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemForm/bloc/item_form_bloc.dart';
 import 'package:web3front/Logic/Items/MintItem/bloc/mint_item_bloc.dart';
@@ -85,6 +86,7 @@ class MyApp extends StatelessWidget {
             marketContractRepository: marketContractRepository,
           ),
         ),
+        BlocProvider(create: (context) => EthereumPriceCubit()),
       ],
       child: MaterialApp(
         title: 'Demo NFT',

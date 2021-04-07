@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:responsive_framework/responsive_framework.dart';
 
-import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
 import 'package:web3front/Logic/Items/SelectItem/cubit/select_item_cubit.dart';
 import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Screens/ItemDetail/widgets/ItemDetailDescription.dart';
@@ -50,6 +47,7 @@ class _ItemDetailScreenState extends State<ItemDetailScreen> {
           return Scaffold(
             appBar: AppBar(
               title: Text(item.name),
+              elevation: 0,
             ),
             body: Scrollbar(
               controller: scrollController,

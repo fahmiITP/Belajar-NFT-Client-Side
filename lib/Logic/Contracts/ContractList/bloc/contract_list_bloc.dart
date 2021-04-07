@@ -5,6 +5,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:web3front/Global/LocalStorageConstant.dart';
 import 'package:web3front/Services/contract_repository.dart';
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 
 part 'contract_list_event.dart';

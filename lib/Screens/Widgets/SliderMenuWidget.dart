@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:web3front/Global/CustomTextStyle.dart';
 import 'package:web3front/Routes/RouteName.dart';
 
 class SliderMenuWidget extends StatelessWidget {

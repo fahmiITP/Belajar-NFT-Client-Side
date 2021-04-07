@@ -1,9 +1,6 @@
-import 'dart:convert';
-
 import 'package:expandable/expandable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_slider_drawer/flutter_slider_drawer.dart';
-import 'package:responsive_framework/responsive_framework.dart';
 import 'package:web3front/Global/CustomTextStyle.dart';
 import 'package:web3front/Logic/Items/MyItems/bloc/my_items_bloc.dart';
 import 'package:web3front/Screens/MyItems/widgets/MyItemsListView.dart';

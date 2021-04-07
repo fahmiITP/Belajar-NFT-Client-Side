@@ -18,7 +18,7 @@ class EtherHelpers {
 
   /// Ethers to Wei Converter
   static weiToEthers({required double wei}) {
-    num convertedEther = wei * pow(10, -18);
+    String convertedEther = Utils.formatEther(wei.toString());
     return convertedEther;
   }
 

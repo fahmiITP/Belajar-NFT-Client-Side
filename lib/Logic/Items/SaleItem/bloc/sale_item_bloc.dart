@@ -4,7 +4,10 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
+import 'package:web3front/Global/FlutterKey.dart';
 import 'package:web3front/Global/LocalStorageConstant.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
+// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 
 import 'package:web3front/Helpers/EtherHelpers.dart';
@@ -108,6 +111,16 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
 
           final signature = stringify(signMsg);
 
+          /// Encrypt the msg hash and signature
+          final encrypter = encrypt.Encrypter(encrypt.AES(
+            FlutterKey.key,
+          ));
+          final encryptedSignMsg =
+              encrypter.encrypt(msg.msgHash, iv: FlutterKey.iv);
+
+          final encryptedSignature =
+              encrypter.encrypt(signature, iv: FlutterKey.iv);
+
           /// Requesting for signature
           yield SaleItemLoading(
               progress: 5,
@@ -118,8 +131,8 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
             await marketContractRepository.putTokenOnSale(
               isOnSale: "true",
               price: event.price,
-              msgHash: msg.msgHash,
-              signature: signature,
+              msgHash: encryptedSignMsg.base64,
+              signature: encryptedSignature.base64,
               tokenId: event.tokenId.toString(),
               contractAddress: address,
               tokenOwner: ethereum.selectedAddress!,
@@ -201,6 +214,16 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
 
             final signature = stringify(signMsg);
 
+            /// Encrypt the msg hash and signature
+            final encrypter = encrypt.Encrypter(encrypt.AES(
+              FlutterKey.key,
+            ));
+            final encryptedSignMsg =
+                encrypter.encrypt(msg.msgHash, iv: FlutterKey.iv);
+
+            final encryptedSignature =
+                encrypter.encrypt(signature, iv: FlutterKey.iv);
+
             /// Requesting for signature
             yield SaleItemLoading(
                 progress: 5,
@@ -211,8 +234,8 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
               await marketContractRepository.putTokenOnSale(
                 isOnSale: "true",
                 price: event.price,
-                msgHash: msg.msgHash,
-                signature: signature,
+                msgHash: encryptedSignMsg.base64,
+                signature: encryptedSignature.base64,
                 tokenId: event.tokenId.toString(),
                 contractAddress: address,
                 tokenOwner: ethereum.selectedAddress!,

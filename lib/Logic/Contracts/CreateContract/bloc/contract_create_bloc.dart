@@ -4,7 +4,6 @@ import 'dart:convert';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
-import 'package:web3front/Helpers/EtherHelpers.dart';
 import 'package:web3front/Services/contract_repository.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';

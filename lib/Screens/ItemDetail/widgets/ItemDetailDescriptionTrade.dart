@@ -30,10 +30,12 @@ class _ItemDetailDescriptionTradeState
   @override
   void initState() {
     super.initState();
-    // Listen to the account change, refresh the screen if account changed
-    ethereum.on("accountsChanged", allowInterop((f) {
-      if (mounted) setState(() {});
-    }));
+    if (ethereum != null) {
+      // Listen to the account change, refresh the screen if account changed
+      ethereum.on("accountsChanged", allowInterop((f) {
+        if (mounted) setState(() {});
+      }));
+    }
   }
 
   @override

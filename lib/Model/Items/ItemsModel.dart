@@ -13,6 +13,9 @@ class ItemListModel {
 
     return ItemListModel(items: items);
   }
+
+  ItemListModel copyWith({final List<ItemsModel>? items}) =>
+      ItemListModel(items: items ?? this.items);
 }
 
 class ItemsModel {

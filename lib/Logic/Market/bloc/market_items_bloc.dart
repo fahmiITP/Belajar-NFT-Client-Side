@@ -29,6 +29,14 @@ class MarketItemsBloc extends Bloc<MarketItemsEvent, MarketItemsState> {
       } catch (e) {
         yield MarketItemsFailed(error: e.toString());
       }
+    } else if (event is MarketItemsSort) {
+      ItemListModel sortedItem = event.items.copyWith();
+      if (event.sortType == MarketItemSortType.PRICE_LOW) {
+        sortedItem.items.sort((lhs, rhs) => lhs.price!.compareTo(rhs.price!));
+      } else {
+        sortedItem.items.sort((lhs, rhs) => rhs.price!.compareTo(lhs.price!));
+      }
+      yield MarketItemsSuccess(itemList: sortedItem);
     }
   }
 }

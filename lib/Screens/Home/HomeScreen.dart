@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:js/js.dart';
+import 'package:web3front/Global/FlutterKey.dart';
 import 'package:web3front/Helpers/ChainIDConverter.dart';
 import 'package:web3front/Helpers/SnackbarHelper.dart';
 import 'package:web3front/Logic/Metamask/Check_Metamask/bloc/metamask_check_bloc.dart';
@@ -7,6 +8,7 @@ import 'package:web3front/Logic/Metamask/Connect_Metamask/bloc/metamask_connect_
 import 'package:web3front/Routes/RouteName.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class MyHomePage extends StatefulWidget {
   final String? title;
@@ -24,16 +26,18 @@ class _MyHomePageState extends State<MyHomePage> {
   void initState() {
     super.initState();
 
-    // Listen on chain change
-    ethereum.on("chainChanged", allowInterop((f) {
-      setState(() {
-        chainId = ChainIDConverter.convertToString(chainIdHex: f);
-      });
-    }));
-    // Listen on account change
-    ethereum.on("accountsChanged", allowInterop((f) {
-      setState(() {});
-    }));
+    if (ethereum != null) {
+      // Listen on chain change
+      ethereum.on("chainChanged", allowInterop((f) {
+        setState(() {
+          chainId = ChainIDConverter.convertToString(chainIdHex: f);
+        });
+      }));
+      // Listen on account change
+      ethereum.on("accountsChanged", allowInterop((f) {
+        setState(() {});
+      }));
+    }
 
     /// Refresh the Screen after build
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -123,9 +127,15 @@ class _MyHomePageState extends State<MyHomePage> {
                 SizedBox(height: 12),
                 // ElevatedButton(
                 //   onPressed: () {
-                //     Navigator.of(context).pushNamed(RouteName.itemDetail);
+                //     final encrypter = encrypt.Encrypter(encrypt.AES(
+                //       FlutterKey.key,
+                //     ));
+                //     final decrypted = encrypter.decrypt64(
+                //         "RusRM1XU1dQt+QXQOwZmKogWhfT/lTTnYgBvuFNrtUHFMLVeM31Yt+DbwK0IxB99nGe2Dl6zsFVb4H04Y9aDV3VoLxUHJSEHyE7ozF03un8=",
+                //         iv: FlutterKey.iv);
+                //     print(decrypted);
                 //   },
-                //   child: Text("To Item detail"),
+                //   child: Text("Generate Key"),
                 // )
                 // ElevatedButton(
                 //   onPressed: () async {

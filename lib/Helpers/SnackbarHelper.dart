@@ -7,4 +7,8 @@ class SnackbarHelper {
       content: Text(msg),
     ));
   }
+
+  static dismiss(BuildContext context) {
+    ScaffoldMessenger.of(context).hideCurrentSnackBar();
+  }
 }

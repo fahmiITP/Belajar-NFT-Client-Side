@@ -13,6 +13,7 @@ import 'package:web3front/Logic/Contracts/ContractSelect/cubit/contract_select_c
 import 'package:web3front/Logic/Contracts/CreateContract/bloc/contract_create_bloc.dart';
 import 'package:web3front/Logic/Ethereum/cubit/ethereum_price_cubit.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
+import 'package:web3front/Logic/Items/BuyItem/buy_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemForm/bloc/item_form_bloc.dart';
 import 'package:web3front/Logic/Items/MintItem/bloc/mint_item_bloc.dart';
 import 'package:web3front/Logic/Items/MyItems/bloc/my_items_bloc.dart';
@@ -62,16 +63,24 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
+          create: (context) => MarketItemsBloc(
+            marketContractRepository: marketContractRepository,
+          ),
+        ),
+        BlocProvider(
           create: (context) => BurnItemBloc(
             context.read<ContractListBloc>(),
             context.read<ContractSelectCubit>(),
+            context.read<MarketItemsBloc>(),
           ),
         ),
         BlocProvider(
           create: (context) => TransferItemBloc(
-            context.read<ContractListBloc>(),
-            context.read<ContractSelectCubit>(),
-          ),
+              marketContractRepository,
+              context.read<SelectItemCubit>(),
+              context.read<ContractListBloc>(),
+              context.read<ContractSelectCubit>(),
+              context.read<MarketItemsBloc>()),
         ),
         BlocProvider(
           create: (context) => SaleItemBloc(
@@ -82,9 +91,10 @@ class MyApp extends StatelessWidget {
           ),
         ),
         BlocProvider(
-          create: (context) => MarketItemsBloc(
-            marketContractRepository: marketContractRepository,
-          ),
+          create: (context) => BuyItemBloc(
+              marketContractRepository: marketContractRepository,
+              marketItemsBloc: context.read<MarketItemsBloc>(),
+              selectItemCubit: context.read<SelectItemCubit>()),
         ),
         BlocProvider(create: (context) => EthereumPriceCubit()),
       ],

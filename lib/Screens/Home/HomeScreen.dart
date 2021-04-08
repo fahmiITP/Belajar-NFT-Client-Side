@@ -1,14 +1,17 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:js/js.dart';
 import 'package:web3front/Global/FlutterKey.dart';
 import 'package:web3front/Helpers/ChainIDConverter.dart';
+import 'package:web3front/Helpers/CryptoAESHelper.dart';
 import 'package:web3front/Helpers/SnackbarHelper.dart';
 import 'package:web3front/Logic/Metamask/Check_Metamask/bloc/metamask_check_bloc.dart';
 import 'package:web3front/Logic/Metamask/Connect_Metamask/bloc/metamask_connect_bloc.dart';
 import 'package:web3front/Routes/RouteName.dart';
+import 'package:web3front/Services/market_contract_repository.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 
 class MyHomePage extends StatefulWidget {
   final String? title;
@@ -126,16 +129,25 @@ class _MyHomePageState extends State<MyHomePage> {
                 ),
                 SizedBox(height: 12),
                 // ElevatedButton(
-                //   onPressed: () {
-                //     final encrypter = encrypt.Encrypter(encrypt.AES(
-                //       FlutterKey.key,
-                //     ));
-                //     final decrypted = encrypter.decrypt64(
-                //         "RusRM1XU1dQt+QXQOwZmKogWhfT/lTTnYgBvuFNrtUHFMLVeM31Yt+DbwK0IxB99nGe2Dl6zsFVb4H04Y9aDV3VoLxUHJSEHyE7ozF03un8=",
-                //         iv: FlutterKey.iv);
-                //     print(decrypted);
+                //   onPressed: () async {
+                //     try {
+                //       final hash = await MarketContractRepository()
+                //           .getTokenHash(
+                //               "0xded83C0319Ae5e0d4d87031DdF54B9B6f494F98a", 12);
+
+                //       final msgHash =
+                //           CryptoAESHelper().decryptAESCryptoJS(hash.msgHash!);
+                //       print("Msg Hash : $msgHash");
+
+                //       final signature =
+                //           CryptoAESHelper().decryptAESCryptoJS(hash.signature!);
+
+                //       print("Signature : $signature");
+                //     } catch (e) {
+                //       print(e);
+                //     }
                 //   },
-                //   child: Text("Generate Key"),
+                //   child: Text("Generate Hash"),
                 // )
                 // ElevatedButton(
                 //   onPressed: () async {

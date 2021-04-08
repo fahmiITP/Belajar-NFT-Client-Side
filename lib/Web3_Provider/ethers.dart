@@ -131,4 +131,7 @@ class Contract {
 
   @JS("estimateGas")
   external Future estimateGas();
+
+  @JS("owner")
+  external Future<String> owner();
 }

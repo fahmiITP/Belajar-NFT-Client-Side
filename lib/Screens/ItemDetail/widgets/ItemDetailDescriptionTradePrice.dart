@@ -26,7 +26,8 @@ class _ItemDetailDescriptionTradePriceState
   Widget build(BuildContext context) {
     return Builder(
       builder: (context) {
-        if (ethereum.selectedAddress == widget.item.tokenOwner) {
+        if (ethereum.selectedAddress!.toLowerCase() ==
+            widget.item.tokenOwner.toLowerCase()) {
           if (widget.item.isOnSale == 0) {
             return TextField(
               controller: priceTextController,
@@ -49,7 +50,8 @@ class _ItemDetailDescriptionTradePriceState
             );
           }
         } else {
-          if (ethereum.selectedAddress != widget.item.tokenOwner &&
+          if (ethereum.selectedAddress!.toLowerCase() !=
+                  widget.item.tokenOwner.toLowerCase() &&
               widget.item.isOnSale == 1) {
             return SelectableText(
               "${Utils.formatEther(widget.item.price!.toString())} ETH",

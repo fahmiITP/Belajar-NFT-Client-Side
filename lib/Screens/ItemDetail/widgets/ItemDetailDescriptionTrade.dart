@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:js/js.dart';
 import 'package:web3front/Helpers/EtherHelpers.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
+import 'package:web3front/Logic/Items/BuyItem/buy_item_bloc.dart';
 import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
 import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Screens/ItemDetail/widgets/ItemDetailBlocListener.dart';
@@ -90,6 +91,7 @@ class _ItemDetailDescriptionTradeState
                                       price: EtherHelpers.etherToWei(
                                         ethers: double.parse(price),
                                       ),
+                                      contractAddress: item.contractAddress,
                                     ),
                                   );
                             } else {
@@ -141,7 +143,9 @@ class _ItemDetailDescriptionTradeState
                         ),
                         onPressed: () {
                           context.read<BurnItemBloc>().add(
-                                BurnItemStart(tokenId: item.tokenId),
+                                BurnItemStart(
+                                    tokenId: item.tokenId,
+                                    contractAddress: item.contractAddress),
                               );
                         },
                         child: Text("Burn the Token"),
@@ -205,7 +209,9 @@ class _ItemDetailDescriptionTradeState
                         ),
                         onPressed: () {
                           context.read<BurnItemBloc>().add(
-                                BurnItemStart(tokenId: item.tokenId),
+                                BurnItemStart(
+                                    tokenId: item.tokenId,
+                                    contractAddress: item.contractAddress),
                               );
                         },
                         child: Text("Burn the Token"),
@@ -213,14 +219,24 @@ class _ItemDetailDescriptionTradeState
                     ),
                   ]);
                 } else {
-                  return Container(
-                    width: 200,
-                    child: ElevatedButton(
-                        onPressed: () {
-                          print(ethereum.selectedAddress);
-                        },
-                        child: Text("Buy")),
-                  );
+                  if (item.isOnSale == 1) {
+                    return Container(
+                      width: 200,
+                      child: ElevatedButton(
+                          onPressed: () {
+                            context
+                                .read<BuyItemBloc>()
+                                .add(BuyItemStart(item: item));
+                          },
+                          child: Text("Buy")),
+                    );
+                  } else {
+                    return Container(
+                      width: 200,
+                      child:
+                          ElevatedButton(onPressed: null, child: Text("Buy")),
+                    );
+                  }
                 }
               },
             ),

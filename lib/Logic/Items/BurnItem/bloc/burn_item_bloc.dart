@@ -1,15 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:html';
 
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
-import 'package:web3front/Global/LocalStorageConstant.dart';
-// ignore: avoid_web_libraries_in_flutter
-import 'dart:html';
 
+import 'package:web3front/Global/LocalStorageConstant.dart';
 import 'package:web3front/Logic/Contracts/ContractList/bloc/contract_list_bloc.dart';
 import 'package:web3front/Logic/Contracts/ContractSelect/cubit/contract_select_cubit.dart';
+import 'package:web3front/Logic/Items/SelectItem/cubit/select_item_cubit.dart';
+import 'package:web3front/Logic/Market/bloc/market_items_bloc.dart';
 import 'package:web3front/Services/item_repository.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
@@ -23,9 +24,11 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
   var web3 = Web3Provider(ethereum);
   final ContractListBloc contractListBloc;
   final ContractSelectCubit contractSelectCubit;
+  final MarketItemsBloc marketItemsBloc;
   BurnItemBloc(
     this.contractListBloc,
     this.contractSelectCubit,
+    this.marketItemsBloc,
   ) : super(BurnItemInitial());
 
   @override
@@ -41,18 +44,10 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
 
       try {
         /// Get contract address
-        String address = "";
+        String address = event.contractAddress;
 
         /// Get contract abi
         List<String> abi = [];
-
-        /// Current User Contract Address
-        if (contractSelectCubit.state is ContractSelectInitial) {
-          address = window.localStorage[LocalStorageConstant.selectedContract]!;
-        } else {
-          address = (contractSelectCubit.state as ContractSelectSelected)
-              .contractAddress;
-        }
 
         /// User Contract Human Readable ABI
         if (contractListBloc.state is ContractListInitial) {
@@ -113,7 +108,11 @@ class BurnItemBloc extends Bloc<BurnItemEvent, BurnItemState> {
             tokenId: event.tokenId.toString(),
           );
 
-          yield BurnItemSuccess(tokenId: event.tokenId.toString());
+          /// Refresh market screen
+          marketItemsBloc.add(MarketItemsFetchStart());
+
+          yield BurnItemSuccess(
+              tokenId: event.tokenId.toString(), contractAddress: address);
         } else {
           yield BurnItemFailed(error: "Error Burning Token");
         }

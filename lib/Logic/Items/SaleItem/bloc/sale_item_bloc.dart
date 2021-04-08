@@ -6,7 +6,6 @@ import 'package:equatable/equatable.dart';
 import 'package:js/js_util.dart';
 import 'package:web3front/Global/FlutterKey.dart';
 import 'package:web3front/Global/LocalStorageConstant.dart';
-import 'package:encrypt/encrypt.dart' as encrypt;
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 
@@ -47,18 +46,10 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
           progress: 1, totalProgress: 5, step: "Contacting Trade Market");
 
       /// Get contract address
-      String address = "";
+      String address = event.contractAddress;
 
       /// Get contract abi
       List<String> abi = [];
-
-      /// Current User Contract Address
-      if (contractSelectCubit.state is ContractSelectInitial) {
-        address = window.localStorage[LocalStorageConstant.selectedContract]!;
-      } else {
-        address = (contractSelectCubit.state as ContractSelectSelected)
-            .contractAddress;
-      }
 
       /// User Contract Human Readable ABI
       if (contractListBloc.state is ContractListInitial) {
@@ -109,18 +100,6 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
           final signMsg = await promiseToFuture(
               web3.getSigner().signMessage(msg.arrayifyHash));
 
-          final signature = stringify(signMsg);
-
-          /// Encrypt the msg hash and signature
-          final encrypter = encrypt.Encrypter(encrypt.AES(
-            FlutterKey.key,
-          ));
-          final encryptedSignMsg =
-              encrypter.encrypt(msg.msgHash, iv: FlutterKey.iv);
-
-          final encryptedSignature =
-              encrypter.encrypt(signature, iv: FlutterKey.iv);
-
           /// Requesting for signature
           yield SaleItemLoading(
               progress: 5,
@@ -128,31 +107,35 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
               step: "Listing Token for Sale");
 
           try {
-            await marketContractRepository.putTokenOnSale(
+            final listToken = await marketContractRepository.putTokenOnSale(
               isOnSale: "true",
               price: event.price,
-              msgHash: encryptedSignMsg.base64,
-              signature: encryptedSignature.base64,
+              msgHash: msg.msgHash,
+              signature: signMsg,
               tokenId: event.tokenId.toString(),
               contractAddress: address,
               tokenOwner: ethereum.selectedAddress!,
             );
 
-            /// Create a copy of item with price set to null, and on sale is false
-            ItemsModel item = (selectItemCubit.state as SelectItemSelected)
-                .selectedItem
-                .copyWith(
-                  isOnSale: 1,
-                  price: event.price,
-                );
+            if (listToken['message'] == 'Token placed on sale successfully') {
+              /// Create a copy of item with price set to null, and on sale is false
+              ItemsModel item = (selectItemCubit.state as SelectItemSelected)
+                  .selectedItem
+                  .copyWith(
+                    isOnSale: 1,
+                    price: event.price,
+                  );
 
-            /// Emit the new item
-            selectItemCubit.selectItem(selectedItem: item);
+              /// Emit the new item
+              selectItemCubit.selectItem(selectedItem: item);
 
-            /// Yield success state
-            yield SaleItemSuccess(
-                tokenId: event.tokenId.toString(),
-                message: "Token Listed On Sale Successfully");
+              /// Yield success state
+              yield SaleItemSuccess(
+                  tokenId: event.tokenId.toString(),
+                  message: "Token Listed On Sale Successfully");
+            } else {
+              yield SaleItemFailed(error: listToken.toString());
+            }
           } catch (e) {
             yield SaleItemFailed(error: e.toString());
           }
@@ -212,18 +195,6 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
             final signMsg = await promiseToFuture(
                 web3.getSigner().signMessage(msg.arrayifyHash));
 
-            final signature = stringify(signMsg);
-
-            /// Encrypt the msg hash and signature
-            final encrypter = encrypt.Encrypter(encrypt.AES(
-              FlutterKey.key,
-            ));
-            final encryptedSignMsg =
-                encrypter.encrypt(msg.msgHash, iv: FlutterKey.iv);
-
-            final encryptedSignature =
-                encrypter.encrypt(signature, iv: FlutterKey.iv);
-
             /// Requesting for signature
             yield SaleItemLoading(
                 progress: 5,
@@ -231,31 +202,35 @@ class SaleItemBloc extends Bloc<SaleItemEvent, SaleItemState> {
                 step: "Listing Token for Sale");
 
             try {
-              await marketContractRepository.putTokenOnSale(
+              final listToken = await marketContractRepository.putTokenOnSale(
                 isOnSale: "true",
                 price: event.price,
-                msgHash: encryptedSignMsg.base64,
-                signature: encryptedSignature.base64,
+                msgHash: msg.msgHash,
+                signature: signMsg,
                 tokenId: event.tokenId.toString(),
                 contractAddress: address,
                 tokenOwner: ethereum.selectedAddress!,
               );
 
-              /// Create a copy of item with price set to null, and on sale is false
-              ItemsModel item = (selectItemCubit.state as SelectItemSelected)
-                  .selectedItem
-                  .copyWith(
-                    isOnSale: 1,
-                    price: event.price,
-                  );
+              if (listToken['message'] == 'Token placed on sale successfully') {
+                /// Create a copy of item with price set to null, and on sale is false
+                ItemsModel item = (selectItemCubit.state as SelectItemSelected)
+                    .selectedItem
+                    .copyWith(
+                      isOnSale: 1,
+                      price: event.price,
+                    );
 
-              /// Emit the new item
-              selectItemCubit.selectItem(selectedItem: item);
+                /// Emit the new item
+                selectItemCubit.selectItem(selectedItem: item);
 
-              /// Yield success state
-              yield SaleItemSuccess(
-                  tokenId: event.tokenId.toString(),
-                  message: "Token Listed On Sale Successfully");
+                /// Yield success state
+                yield SaleItemSuccess(
+                    tokenId: event.tokenId.toString(),
+                    message: "Token Listed On Sale Successfully");
+              } else {
+                yield SaleItemFailed(error: listToken.toString());
+              }
             } catch (e) {
               yield SaleItemFailed(error: e.toString());
             }

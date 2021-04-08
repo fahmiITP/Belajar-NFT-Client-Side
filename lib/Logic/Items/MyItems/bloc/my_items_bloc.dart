@@ -57,6 +57,9 @@ class MyItemsBloc extends Bloc<MyItemsEvent, MyItemsState> {
                 contractAddress: contractAddress,
                 item: [
                   ItemPerContract(
+                    id: item['id'],
+                    description: item['description'],
+                    contractAddress: contractAddress,
                     ownerAddress: item['token_owner'],
                     name: item['name'],
                     image: item['image'],
@@ -72,14 +75,17 @@ class MyItemsBloc extends Bloc<MyItemsEvent, MyItemsState> {
                 .firstWhere(
                     (element) => element.contractAddress == contractAddress)
                 .item
-                .add(
-                  ItemPerContract(
-                    ownerAddress: item['token_owner'],
-                    name: item['name'],
-                    image: item['image'],
-                    tokenId: item['token_id'],
-                  ),
-                );
+                .add(ItemPerContract(
+                  id: item['id'],
+                  description: item['description'],
+                  contractAddress: contractAddress,
+                  ownerAddress: item['token_owner'],
+                  name: item['name'],
+                  image: item['image'],
+                  tokenId: item['token_id'],
+                  isOnSale: item['isOnSale'],
+                  price: item['price'],
+                ));
           }
         }
 

@@ -58,10 +58,11 @@ class _ItemDetailTransferDialogState extends State<ItemDetailTransferDialog> {
                 ),
                 onPressed: () {
                   Navigator.of(context).pop();
-                  context.read<TransferItemBloc>().add(
-                        TransferItemStart(
-                            tokenId: item.tokenId, newOwner: _controller.text),
-                      );
+                  context.read<TransferItemBloc>().add(TransferItemStart(
+                      tokenId: item.tokenId,
+                      newOwner: _controller.text,
+                      contractAddress: item.contractAddress,
+                      item: item));
                 },
                 child: Text("Transfer Token"),
               ),

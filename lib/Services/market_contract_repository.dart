@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:web3front/Global/Endpoints.dart';
+import 'package:web3front/Model/Items/ItemHash.dart';
 import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Model/MarketContract/MarketDetailModel.dart';
 
@@ -53,7 +54,7 @@ class MarketContractRepository {
     }
   }
 
-  /// Put token listing
+  /// Cancel token listing
   Future<dynamic?> cancelTokenListing({
     required String tokenId,
     required String contractAddress,
@@ -76,6 +77,29 @@ class MarketContractRepository {
     }
   }
 
+  /// Update token owner and remove from listing
+  Future<dynamic?> updateTokenOwnerAndRemoveListing({
+    required String tokenId,
+    required String contractAddress,
+    required String tokenOwner,
+  }) async {
+    try {
+      var response = await http.post(
+        Uri.parse("${Endpoints.apiBaseUrl}market/finalizeBuy"),
+        body: {
+          "token_id": tokenId,
+          "contract_address": contractAddress,
+          "owner_address": tokenOwner
+        },
+      );
+
+      return jsonDecode(response.body);
+    } catch (e) {
+      print(e);
+      throw e.toString();
+    }
+  }
+
   /// Get all on-sale token
   Future<ItemListModel> getAllOnSaleToken() async {
     try {
@@ -85,6 +109,25 @@ class MarketContractRepository {
 
       ItemListModel result =
           ItemListModel.fromJson(jsonDecode(response.body)['rows']);
+      return result;
+    } catch (e) {
+      print(e);
+      throw e;
+    }
+  }
+
+  /// Get token's msg hash and signature
+  Future<ItemHash> getTokenHash(String contractAddress, int tokenId) async {
+    try {
+      var response = await http.post(
+        Uri.parse("${Endpoints.apiBaseUrl}marketplace/magicword"),
+        body: {
+          "token_id": tokenId.toString(),
+          "contract_address": contractAddress,
+        },
+      );
+
+      ItemHash result = ItemHash.fromJson(jsonDecode(response.body));
       return result;
     } catch (e) {
       print(e);

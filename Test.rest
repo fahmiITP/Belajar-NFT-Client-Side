@@ -9,10 +9,11 @@
 #     "tradeMarketAddress": "0x5639b7872e6Ff9fe61Bb8d08f72D95B24DF42D72"
 # }
 
-POST http://localhost:3000/marketplace/magicword HTTP/1.1
+POST http://localhost:3000/market/finalizeBuy HTTP/1.1
 content-type: application/json
 
 {
     "contract_address": "0xded83C0319Ae5e0d4d87031DdF54B9B6f494F98a",
-    "token_id": 12
+    "token_id": 5,
+    "owner_address": "0xBCC367E4b172459d981F2dFa01fDE7F983eBedAd"
 }

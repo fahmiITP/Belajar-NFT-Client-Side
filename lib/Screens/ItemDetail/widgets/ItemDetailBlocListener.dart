@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:web3front/Logic/Items/BurnItem/bloc/burn_item_bloc.dart';
+import 'package:web3front/Logic/Items/BuyItem/buy_item_bloc.dart';
 import 'package:web3front/Logic/Items/ItemList/bloc/item_list_bloc.dart';
+import 'package:web3front/Logic/Items/MyItems/bloc/my_items_bloc.dart';
 import 'package:web3front/Logic/Items/SaleItem/bloc/sale_item_bloc.dart';
 import 'package:web3front/Logic/Items/TransferItem/bloc/transfer_item_bloc.dart';
 
@@ -58,6 +60,10 @@ class ItemDetailBlocListener extends StatelessWidget {
                   .removeWhere(
                       (element) => element.tokenId.toString() == state.tokenId);
             }
+
+            if (context.read<MyItemsBloc>().state is MyItemsSuccess) {
+              context.read<MyItemsBloc>().add(MyItemsFetch());
+            }
           } else if (state is TransferItemFailed) {
             ScaffoldMessenger.of(context).removeCurrentSnackBar();
             ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -91,6 +97,12 @@ class ItemDetailBlocListener extends StatelessWidget {
                     .removeWhere((element) =>
                         element.tokenId.toString() == state.tokenId);
               }
+
+              if (context.read<MyItemsBloc>().state is MyItemsSuccess) {
+                context.read<MyItemsBloc>().add(MyItemsFetch());
+              }
+
+              Navigator.of(context).pop();
             } else if (state is BurnItemFailed) {
               ScaffoldMessenger.of(context).removeCurrentSnackBar();
               ScaffoldMessenger.of(context).showSnackBar(SnackBar(
@@ -99,7 +111,42 @@ class ItemDetailBlocListener extends StatelessWidget {
               ));
             }
           },
-          child: Container(),
+          child: BlocListener<BuyItemBloc, BuyItemState>(
+            listener: (context, state) {
+              if (state is BuyItemLoading) {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      "${state.progress}/${state.totalProgress} ${state.step}"),
+                  duration: Duration(days: 1),
+                ));
+              } else if (state is BuyItemSuccess) {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(
+                      "Token Bought Successfully, Token ID : ${state.tokenId}"),
+                  duration: Duration(seconds: 5),
+                ));
+
+                /// Remove token from item list
+                if (context.read<ItemListBloc>().state
+                    is ItemListFetchSuccess) {
+                  (context.read<ItemListBloc>().state as ItemListFetchSuccess)
+                      .tokenList
+                      .items
+                      .removeWhere((element) =>
+                          element.tokenId.toString() == state.tokenId);
+                }
+              } else if (state is BuyItemFailed) {
+                ScaffoldMessenger.of(context).removeCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text("${state.error}"),
+                  duration: Duration(seconds: 5),
+                ));
+              }
+            },
+            child: Container(),
+          ),
         ),
       ),
     );

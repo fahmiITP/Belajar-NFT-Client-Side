@@ -38,6 +38,7 @@ dependencies:
   js: ^0.6.3
   responsive_framework: ^0.1.0
   rxdart: ^0.26.0
+  tuple: ^2.0.0
   web_socket_channel: ^2.0.0
 
 dev_dependencies:

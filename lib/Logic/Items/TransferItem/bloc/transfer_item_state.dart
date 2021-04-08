@@ -11,10 +11,9 @@ class TransferItemInitial extends TransferItemState {}
 
 class TransferItemSuccess extends TransferItemState {
   final String tokenId;
+  final String contractAddress;
 
-  TransferItemSuccess({
-    required this.tokenId,
-  });
+  TransferItemSuccess({required this.tokenId, required this.contractAddress});
 
   @override
   List<Object> get props => [tokenId];

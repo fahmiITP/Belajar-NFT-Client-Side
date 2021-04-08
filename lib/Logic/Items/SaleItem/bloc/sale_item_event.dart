@@ -10,10 +10,12 @@ abstract class SaleItemEvent extends Equatable {
 class SaleItemStart extends SaleItemEvent {
   final int tokenId;
   final double price;
+  final String contractAddress;
 
   SaleItemStart({
     required this.tokenId,
     required this.price,
+    required this.contractAddress,
   });
 
   @override

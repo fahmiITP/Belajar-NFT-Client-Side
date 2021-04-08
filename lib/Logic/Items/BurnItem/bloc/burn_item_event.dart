@@ -9,9 +9,11 @@ abstract class BurnItemEvent extends Equatable {
 
 class BurnItemStart extends BurnItemEvent {
   final int tokenId;
+  final String contractAddress;
 
   BurnItemStart({
     required this.tokenId,
+    required this.contractAddress,
   });
 
   @override

@@ -1,6 +1,5 @@
 import 'dart:async';
 import 'dart:convert';
-// ignore: avoid_web_libraries_in_flutter
 import 'dart:html';
 
 import 'package:bloc/bloc.dart';
@@ -10,7 +9,11 @@ import 'package:web3front/Global/LocalStorageConstant.dart';
 
 import 'package:web3front/Logic/Contracts/ContractList/bloc/contract_list_bloc.dart';
 import 'package:web3front/Logic/Contracts/ContractSelect/cubit/contract_select_cubit.dart';
+import 'package:web3front/Logic/Items/SelectItem/cubit/select_item_cubit.dart';
+import 'package:web3front/Logic/Market/bloc/market_items_bloc.dart';
+import 'package:web3front/Model/Items/ItemsModel.dart';
 import 'package:web3front/Services/item_repository.dart';
+import 'package:web3front/Services/market_contract_repository.dart';
 import 'package:web3front/Web3_Provider/ethereum.dart';
 import 'package:web3front/Web3_Provider/ethers.dart';
 import 'package:web3front/main.dart';
@@ -20,12 +23,18 @@ part 'transfer_item_state.dart';
 
 class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
   final ItemRepository itemRepository = ItemRepository();
+  final MarketContractRepository marketContractRepository;
+  final MarketItemsBloc marketItemsBloc;
+  final SelectItemCubit selectItemCubit;
   var web3 = Web3Provider(ethereum);
   final ContractListBloc contractListBloc;
   final ContractSelectCubit contractSelectCubit;
   TransferItemBloc(
+    this.marketContractRepository,
+    this.selectItemCubit,
     this.contractListBloc,
     this.contractSelectCubit,
+    this.marketItemsBloc,
   ) : super(TransferItemInitial());
 
   @override
@@ -41,18 +50,10 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
 
       try {
         /// Get contract address
-        String address = "";
+        String address = event.contractAddress;
 
         /// Get contract abi
         List<String> abi = [];
-
-        /// Current User Contract Address
-        if (contractSelectCubit.state is ContractSelectInitial) {
-          address = window.localStorage[LocalStorageConstant.selectedContract]!;
-        } else {
-          address = (contractSelectCubit.state as ContractSelectSelected)
-              .contractAddress;
-        }
 
         /// User Contract Human Readable ABI
         if (contractListBloc.state is ContractListInitial) {
@@ -87,7 +88,7 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
         yield TransferItemLoading(
             progress: 2,
             totalProgress: totalProgress,
-            step: "Waiting the token to be mined");
+            step: "Waiting the transaction to be mined");
 
         /// Wait until the transaction has been mined
         final confirmation = await promiseToFuture(
@@ -114,7 +115,23 @@ class TransferItemBloc extends Bloc<TransferItemEvent, TransferItemState> {
             tokenId: event.tokenId.toString(),
           );
 
-          yield TransferItemSuccess(tokenId: event.tokenId.toString());
+          /// Cancel token listing if it was listed before
+          await marketContractRepository.cancelTokenListing(
+              tokenId: event.tokenId.toString(),
+              contractAddress: address,
+              tokenOwner: event.newOwner);
+
+          /// Refresh item detail
+          selectItemCubit.selectItem(
+            selectedItem:
+                event.item.copyWith(tokenOwner: event.newOwner, isOnSale: 0),
+          );
+
+          /// Refresh the market
+          marketItemsBloc.add(MarketItemsFetchStart());
+
+          yield TransferItemSuccess(
+              tokenId: event.tokenId.toString(), contractAddress: address);
         } else {
           yield TransferItemFailed(error: "Error Transfering Token");
         }

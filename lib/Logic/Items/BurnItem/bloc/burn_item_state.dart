@@ -11,9 +11,11 @@ class BurnItemInitial extends BurnItemState {}
 
 class BurnItemSuccess extends BurnItemState {
   final String tokenId;
+  final String contractAddress;
 
   BurnItemSuccess({
     required this.tokenId,
+    required this.contractAddress,
   });
 
   @override

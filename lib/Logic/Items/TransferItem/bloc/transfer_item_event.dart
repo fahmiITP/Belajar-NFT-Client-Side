@@ -10,10 +10,14 @@ abstract class TransferItemEvent extends Equatable {
 class TransferItemStart extends TransferItemEvent {
   final int tokenId;
   final String newOwner;
+  final String contractAddress;
+  final ItemsModel item;
 
   TransferItemStart({
     required this.tokenId,
     required this.newOwner,
+    required this.contractAddress,
+    required this.item,
   });
 
   @override

@@ -108,11 +108,12 @@ class _CustomDialogState extends State<CustomDialog> {
                 onTap: () {
                   if (textEditingController.text != "") {
                     Navigator.of(context, rootNavigator: true).pop();
-                    context.read<TransferItemBloc>().add(
-                          TransferItemStart(
-                              tokenId: widget.item.tokenId,
-                              newOwner: textEditingController.text),
-                        );
+                    // context.read<TransferItemBloc>().add(
+                    //       TransferItemStart(
+                    //           tokenId: widget.item.tokenId,
+                    //           newOwner: textEditingController.text,
+                    //           contractAddress: widget.item.contractAddress),
+                    //     );
                   }
                 },
                 child: Container(
@@ -132,13 +133,7 @@ class _CustomDialogState extends State<CustomDialog> {
             ),
             ResponsiveRowColumnItem(
               child: InkWell(
-                onTap: () {
-                  Navigator.of(context, rootNavigator: true).pop();
-                  context.read<SaleItemBloc>().add(
-                        SaleItemStart(
-                            tokenId: widget.item.tokenId, price: 1000000000000),
-                      );
-                },
+                onTap: () {},
                 child: Container(
                   height: 50,
                   width: double.infinity,
